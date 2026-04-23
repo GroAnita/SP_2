@@ -1,109 +1,109 @@
-export default function ListingCard(listing) {
-      
-    const card = document.createElement('div');
-    card.className = "card card-hover border-2 border-border rounded-lg w-full flex flex-col cursor-pointer ";
+import { updateCountdown } from '../utils/countDown.js';
 
-    card.addEventListener('click', () => {
-        openListingModal(listing);
-    });
+export default function ListingCard(listing, isFeatured = false) {
+  const card = document.createElement('div');
 
-    const header = document.createElement('div');
-    header.className = "bg-header w-full h-12 flex items-center rounded-t-md justify-center";
+  card.addEventListener('click', () => {
+    openListingModal(listing);
+  });
+
+  if (isFeatured) {
+    card.className =
+      'relative md:col-span-2 md:row-span-2 h-full overflow-hidden rounded-lg cursor-pointer group';
 
     const image = document.createElement('img');
-    image.className = "card-image";
-   
-    const imageURL = listing.media?.[0]?.url || "/images/Lemonmascot.png";
-    image.className = "rounded-b-md w-full h-48 object-cover";
-    image.src = imageURL || "/images/Lemonmascot.png";
-    image.alt = listing.title || "Listing Image";
+    image.src = listing.media?.[0]?.url || '/images/Lemonmascot.png';
+    image.alt = listing.title || 'Listing Image';
+    image.className =
+      'w-full h-full object-cover absolute inset-0 z-0 transition duration-500 group-hover:scale-105';
 
-    const cardBody = document.createElement('div');
-    cardBody.className = "card-body";
+    const overlay = document.createElement('div');
+    overlay.className =
+      'absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent z-10';
 
-    const cardTitle = document.createElement('h2');
-    cardTitle.className = "card-title truncate p-2";
-    cardTitle.textContent = listing.title;
+    const content = document.createElement('div');
+    content.className =
+      'absolute bottom-0 p-4 text-white z-20 flex flex-col gap-2';
 
-    const cardDescription = document.createElement('p');
-    cardDescription.className = "card-text";
-    cardDescription.textContent = listing.description || 'No description available.' ;
+    const badge = document.createElement('span');
+    badge.textContent = 'Featured Listing';
+    badge.className = 'bg-primary text-black px-2 py-1 font-bold rounded w-fit';
 
-    const fullText = listing.description || 'No description available.';
-    const maxLength = 50;
-    cardDescription.textContent = truncateText(fullText, maxLength);
- 
-    const highestBid = getHighestBid(listing.bids);
-    
-    const bid = document.createElement('span');
-    bid.className = "card-text font-bold";
-    bid.textContent = `Highest Bid: ${highestBid} credits`;
+    const title = document.createElement('h2');
+    title.textContent = listing.title;
+    title.className = 'text-lg font-bold';
 
-    const timeRemaining = document.createElement('span');
-    timeRemaining.className = "card-time";
-    const endTime = new Date(listing.endsAt);
+    const bid = document.createElement('p');
+    bid.textContent = `Highest Bid: ${getHighestBid(listing.bids)} credits`;
+    bid.className = 'font-bold';
 
-function updateCountdown() {
-    const now = new Date();
-    const timeDiff = endTime - now;
+    content.appendChild(badge);
+    content.appendChild(title);
+    content.appendChild(bid);
 
-    if (timeDiff <= 0) {
-        timeRemaining.className = "card-time-ended";
-        timeRemaining.textContent = "Auction Ended";
-        clearInterval(interval); 
-        return;
-    }
-
-    let remaining = timeDiff;
-
-    const weeks = Math.floor(remaining / (1000 * 60 * 60 * 24 * 7));
-    remaining %= (1000 * 60 * 60 * 24 * 7);
-
-    const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
-    remaining %= (1000 * 60 * 60 * 24);
-
-    const hours = Math.floor(remaining / (1000 * 60 * 60));
-    remaining %= (1000 * 60 * 60);
-
-    const minutes = Math.floor(remaining / (1000 * 60));
-    remaining %= (1000 * 60);
-
-    const seconds = Math.floor(remaining / 1000);
-
-    timeRemaining.textContent =
-        `Ends in: ${weeks}w ${days}d ${hours}h ${minutes}m ${seconds}s`;
-}
-const interval = setInterval(updateCountdown, 1000);
-updateCountdown();
-
-
-    const bidButton = document.createElement('button');
-    bidButton.className = "btn-sm mb-2 ";
-    bidButton.textContent = "Place a Bid";
-    bidButton.addEventListener('click', () => {
-        alert(`You clicked on ${listing.title}`);
-    });
-
-
-    cardBody.appendChild(timeRemaining);
-    header.appendChild(cardTitle);
-    cardBody.appendChild(cardDescription);
-    cardBody.appendChild(bid);
-    cardBody.appendChild(bidButton);
-    card.appendChild(header);
     card.appendChild(image);
-    card.appendChild(cardBody);
+    card.appendChild(overlay);
+    card.appendChild(content);
 
     return card;
+  }
+
+  card.className =
+    'relative h-full overflow-hidden rounded-lg cursor-pointer group';
+
+  const image = document.createElement('img');
+  image.src = listing.media?.[0]?.url || '/images/Lemonmascot.png';
+  image.alt = listing.title;
+  image.className =
+    'w-full h-full object-cover absolute inset-0 z-0 transition duration-500 group-hover:scale-105';
+
+  const overlay = document.createElement('div');
+  overlay.className =
+    'absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent z-10';
+
+  const content = document.createElement('div');
+  content.className =
+    'absolute bottom-0 p-3 text-white z-20 flex flex-col gap-1 w-full';
+
+  const title = document.createElement('h2');
+  title.textContent = listing.title;
+  title.className = 'text-sm font-bold truncate';
+
+  const bid = document.createElement('p');
+  bid.textContent = `Highest Bid: ${getHighestBid(listing.bids)} credits`;
+  bid.className = 'text-xs';
+
+  const favorite = document.createElement('i');
+  favorite.className =
+    'fa-solid fa-heart absolute top-2 right-2 text-pink-500 text-xl opacity-70 hover:opacity-100 transition';
+
+  // TIME
+  const time = document.createElement('span');
+  time.className = 'text-xs';
+
+  const endTime = new Date(listing.endsAt);
+
+  const intervalId = updateCountdown(time, endTime);
+  time._intervalId = intervalId;
+
+  content.appendChild(title);
+  content.appendChild(bid);
+  content.appendChild(time);
+
+  card.appendChild(image);
+  card.appendChild(favorite);
+  card.appendChild(overlay);
+  card.appendChild(content);
+
+  return card;
 }
 
-
 function getHighestBid(bids = []) {
-    if (!bids.length) return 0;
-    return Math.max(...bids.map((bid) => bid.amount));
+  if (!bids.length) return 0;
+  return Math.max(...bids.map((bid) => bid.amount));
 }
 
 function truncateText(text, maxLength) {
-    if( text.length <= maxLength) return text;
-    return text.slice(0, maxLength) + '...';
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + '...';
 }

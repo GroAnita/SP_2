@@ -3,116 +3,117 @@
 @tailwind utilities;
 
 body {
-    @apply font-inter;
+  @apply font-inter;
 }
 
 /*Light Mode*/
 :root {
-    --color-bg : #F9FAFB;
-    --color-text : #1F2937;
-    --color-card : #F3F4F6;
-    --color-primary : #FFF200;
-    --color-secondary : #F59E0B;
-    --color-success : #38f504;
-    --color-error : #EF4444;
-    --color-header : #1f2937;
-    --color-btn-text : #1f2937;
-    --color-border :#F9fafb;
+  --color-bg: #f3f3f3;
+  --color-text: #1f2937;
+  --color-card: #f3f4f6;
+  --color-primary: #fff200;
+  --color-secondary: #f59e0b;
+  --color-success: #38f504;
+  --color-error: #ef4444;
+  --color-header: #3c3c3c;
+  --color-btn-text: #1f2937;
+  --color-border: #1f2937;
+  --color-bottom-nav: #3c3c3c;
 }
 
 /*Dark Mode*/
 .dark {
-    --color-header : #1F2937;
-    --color-bg : #1F2937;
-    --color-text : #F9FAFB;
-    --color-btn : #1f2937;
-    --color-card : #374151;
-    --color-primary : #FFF200;
-    --color-secondary : #F59E0B;
-    --color-success : #38f504;
-    --color-error : #EF4444;
-    --color-btn-text : #1f2937;
-    --color-border : #F6fa2a;
+  --color-header: #3c3c3c;
+  --color-bg: #1f2937;
+  --color-text: #f3f4f6;
+  --color-btn: #1f2937;
+  --color-card: #374151;
+  --color-primary: #fff200;
+  --color-secondary: #f59e0b;
+  --color-success: #38f504;
+  --color-error: #ef4444;
+  --color-btn-text: #1f2937;
+  --color-border: #facc15;
 }
 
 @layer components {
-    .card {
-        @apply bg-bg text-text rounded-lg transition;
-    }
-    .card:hover {
-        @apply hover:shadow-lg hover:-translate-y-1 cursor-pointer;
-    }
-    .card-image{
-        @apply w-56 h-56 object-cover rounded-md mb-3 p-1;
-    }
-    .card-body {
-        @apply flex flex-col gap-2 p-2;
-    }
-    .card-title {
-        @apply text-lg text-primary font-semibold font-poppins;
-    }
-    .card-time {
-        @apply text-xs text-text bg-success rounded-full px-2 py-1 self-start;
-    }
-    .card-time-ended {
-        @apply text-xs text-error px-2 py-1 self-start;
-    }
-    .card-text {
-        @apply text-sm text-text;
-    }
-    .card-price {
-        @apply text-primary font-bold text-lg;
-    }
-        .btn-primary {
-            @apply bg-primary text-btntext font-semibold border-2 border-text py-2 px-4 rounded-3xl hover:bg-primary;
-        }
-        .btn-secondary {
-            @apply bg-secondary text-text font-semibold py-2 px-4 rounded;
-        }
-        .btn-success {
-            @apply bg-success text-text font-semibold py-2 px-4 rounded;
-        }
-        .btn-error {
-            @apply bg-error text-text font-semibold py-2 px-4 rounded;
-        }    
-        
-        .btn-primary:hover {
-            @apply bg-primary;
-        }
-        .btn-secondary:hover {
-            @apply bg-secondary;
-        }
-        .btn-success:hover {
-            @apply bg-success;
-        }
-        .btn-error:hover {
-            @apply bg-error;
-        }
-        .input {
-            @apply bg-card text-text rounded-lg shadow-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary;
-        }
-        .input:focus {
-            @apply ring-primary/50;
-        }
-        .input::placeholder {
-            @apply text-gray-400;
-        }
-        .input:disabled {
-            @apply bg-gray-200 text-gray-400 cursor-not-allowed;
-        }
-        .input-error {
-            @apply border border-error;
-        }
-        .input-error:focus {
-            @apply ring-error/50;
-        }
-        .btn-sm {
-            @apply bg-primary text-btntext font-semibold border-2 border-text rounded-3xl hover:bg-primary w-24 py-1 px-0.5 text-sm;
-        }
-        .btn-md {
-            @apply py-2 px-4 text-base;
-        }
-        .btn-lg {
-            @apply py-3 px-6 text-lg;
-        }
+  .card {
+    @apply bg-white text-text h-full relative rounded-lg transition;
+  }
+  .card:hover {
+    @apply hover:shadow-lg hover:-translate-y-1 cursor-pointer;
+  }
+  .card-image {
+    @apply w-full h-full object-contain rounded-lg mb-1 p-1;
+  }
+  .card-body {
+    @apply flex flex-col gap-2 h-full p-2;
+  }
+  .card-title {
+    @apply text-lg text-text font-inter;
+  }
+  .card-time {
+    @apply text-xs text-text bg-success rounded-full px-2 py-1 self-start;
+  }
+  .card-time-ended {
+    @apply text-xs text-error py-1 self-start;
+  }
+  .card-text {
+    @apply text-sm text-text;
+  }
+  .card-price {
+    @apply text-primary font-bold text-lg;
+  }
+  .btn-primary {
+    @apply bg-primary text-btntext font-semibold border-2 border-text py-2 px-4 rounded-3xl hover:bg-primary;
+  }
+  .btn-secondary {
+    @apply bg-secondary text-text font-semibold py-2 px-4 rounded;
+  }
+  .btn-success {
+    @apply bg-success text-text font-semibold py-2 px-4 rounded;
+  }
+  .btn-error {
+    @apply bg-error text-text font-semibold py-2 px-4 rounded;
+  }
+
+  .btn-primary:hover {
+    @apply bg-primary;
+  }
+  .btn-secondary:hover {
+    @apply bg-secondary;
+  }
+  .btn-success:hover {
+    @apply bg-success;
+  }
+  .btn-error:hover {
+    @apply bg-error;
+  }
+  .input {
+    @apply bg-card text-text rounded-lg shadow-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary;
+  }
+  .input:focus {
+    @apply ring-primary;
+  }
+  .input::placeholder {
+    @apply text-gray-400;
+  }
+  .input:disabled {
+    @apply bg-gray-200 text-gray-400 cursor-not-allowed;
+  }
+  .input-error {
+    @apply border border-error;
+  }
+  .input-error:focus {
+    @apply ring-error;
+  }
+  .btn-sm {
+    @apply bg-primary text-btntext font-semibold border-2 border-text rounded-3xl hover:bg-primary w-24 py-1 px-0.5 text-sm;
+  }
+  .btn-md {
+    @apply py-2 px-4 text-base;
+  }
+  .btn-lg {
+    @apply py-3 px-6 text-lg;
+  }
 }

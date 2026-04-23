@@ -1,19 +1,19 @@
-import Listings from "../views/listings.js";
-import Header from "../components/header.js";
+import Listings from '../views/listings.js';
+import Header from '../components/header.js';
 
 const routes = {
-  "/": Listings,
+  '/': Listings,
 };
 
 export default function router() {
-  const app = document.getElementById("app");
-  const headerContainer = document.getElementById("header");
+  const app = document.getElementById('app');
+  const headerContainer = document.getElementById('header');
 
-  const base = "/SP_2";
+  const base = '/SP_2';
 
   // Clear
-  app.innerHTML = "";
-  headerContainer.innerHTML = "";
+  app.innerHTML = '';
+  headerContainer.innerHTML = '';
 
   //  Render header
   headerContainer.appendChild(Header());
@@ -22,7 +22,7 @@ export default function router() {
   let path = window.location.pathname;
 
   if (path.startsWith(base)) {
-    path = path.slice(base.length) || "/";
+    path = path.slice(base.length) || '/';
   }
 
   const view = routes[path] || Listings;
@@ -31,11 +31,17 @@ export default function router() {
   // HANDLE ASYNC + SYNC
   if (page instanceof Promise) {
     page.then((resolvedView) => {
-      app.innerHTML = "";
+      app.innerHTML = '';
       app.appendChild(resolvedView);
     });
   } else {
-    app.innerHTML = "";
+    app.innerHTML = '';
     app.appendChild(page);
   }
+
+  document.querySelectorAll('[data-timer]').forEach((el) => {
+    if (el._intervalId) {
+      clearInterval(el._intervalId);
+    }
+  });
 }
