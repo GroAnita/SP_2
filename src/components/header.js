@@ -12,7 +12,7 @@ export default function Header() {
   title.className = 'text-primary text-4xl font-bold font-poppins';
   title.textContent = 'LemonBids';
   const logo = document.createElement('img');
-  logo.src = '/SP_2/images/lemonmascot-1.png';
+  logo.src = `${import.meta.env.BASE_URL}images/lemonmascot-1.png`;
   logo.alt = 'LemonBids Logo';
   logo.className = 'w-14 h-14 mr-2';
 
