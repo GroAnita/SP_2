@@ -1,4 +1,5 @@
 import { updateCountdown } from '../utils/countDown.js';
+import { imageFallback } from '../utils/imageFallback.js';
 
 export default function ListingCard(listing, isFeatured = false) {
   const card = document.createElement('div');
@@ -12,10 +13,12 @@ export default function ListingCard(listing, isFeatured = false) {
       'relative md:col-span-2 md:row-span-2 h-full overflow-hidden rounded-lg cursor-pointer group';
 
     const image = document.createElement('img');
-    image.src = listing.media?.[0]?.url || '/SP_2/images/Lemonmascot.png';
     image.alt = listing.title || 'Listing Image';
     image.className =
       'w-full h-full object-cover absolute inset-0 z-0 transition duration-500 group-hover:scale-105';
+
+    const fallback = `${import.meta.env.BASE_URL}images/lemonmascot-1.png`;
+    imageFallback(image, listing.media?.[0]?.url, fallback);
 
     const overlay = document.createElement('div');
     overlay.className =
@@ -52,10 +55,12 @@ export default function ListingCard(listing, isFeatured = false) {
     'relative h-full overflow-hidden rounded-lg cursor-pointer group';
 
   const image = document.createElement('img');
-  image.src = listing.media?.[0]?.url || '/images/Lemonmascot.png';
   image.alt = listing.title;
   image.className =
     'w-full h-full object-cover absolute inset-0 z-0 transition duration-500 group-hover:scale-105';
+
+  const fallback = `${import.meta.env.BASE_URL}images/lemonmascot-1.png`;
+  imageFallback(image, listing.media?.[0]?.url, fallback);
 
   const overlay = document.createElement('div');
   overlay.className =
