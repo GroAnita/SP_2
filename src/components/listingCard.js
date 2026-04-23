@@ -2,6 +2,7 @@ import { updateCountdown } from '../utils/countDown.js';
 import { imageFallback } from '../utils/imageFallback.js';
 
 export default function ListingCard(listing, isFeatured = false) {
+  const fallback = `${import.meta.env.BASE_URL}images/lemonmascot-1.png`;
   const card = document.createElement('div');
 
   card.addEventListener('click', () => {
@@ -16,8 +17,6 @@ export default function ListingCard(listing, isFeatured = false) {
     image.alt = listing.title || 'Listing Image';
     image.className =
       'w-full h-full object-cover absolute inset-0 z-0 transition duration-500 group-hover:scale-105';
-
-    const fallback = `${import.meta.env.BASE_URL}images/lemonmascot-1.png`;
     imageFallback(image, listing.media?.[0]?.url, fallback);
 
     const overlay = document.createElement('div');
@@ -58,8 +57,6 @@ export default function ListingCard(listing, isFeatured = false) {
   image.alt = listing.title;
   image.className =
     'w-full h-full object-cover absolute inset-0 z-0 transition duration-500 group-hover:scale-105';
-
-  const fallback = `${import.meta.env.BASE_URL}images/lemonmascot-1.png`;
   imageFallback(image, listing.media?.[0]?.url, fallback);
 
   const overlay = document.createElement('div');
