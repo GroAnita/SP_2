@@ -1,12 +1,17 @@
 import { updateCountdown } from '../utils/countDown.js';
 import { imageFallback } from '../utils/imageFallback.js';
+import ListingDetail from '../views/listingDetail.js';
+import listingModal from './listingModal.js';
 
 export default function ListingCard(listing, isFeatured = false) {
   const fallback = `${import.meta.env.BASE_URL}images/lemonmascot-1.png`;
   const card = document.createElement('div');
 
   card.addEventListener('click', () => {
-    openListingModal(listing);
+    localStorage.setItem('selectedListing', JSON.stringify(listing));
+    const base = import.meta.env.BASE_URL || '';
+    history.pushState({}, '', `${base}listing`);
+    window.dispatchEvent(new PopStateEvent('popstate'));
   });
 
   if (isFeatured) {

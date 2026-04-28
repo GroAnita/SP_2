@@ -1,3 +1,5 @@
+import logInModal from './logInModal.js';
+
 export default function Header() {
   const header = document.createElement('header');
   header.className = '  flex flex-col justify-between items-center';
@@ -22,8 +24,9 @@ export default function Header() {
   searchInput.className = 'input hidden md:block md:w-[600px]';
 
   const nav = document.createElement('nav');
-  const toggleButton = document.createElement('button');
-  toggleButton.className = 'btn-sm btn-primary mr-4';
+  const toggleButton = document.createElement('i');
+  toggleButton.className =
+    'fa-solid fa-moon text-2xl text-primary cursor-pointer mr-4';
 
   const isDarkMode = document.documentElement.classList.contains('dark');
   toggleButton.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
@@ -64,7 +67,16 @@ function createNavLink(text, path) {
   const link = document.createElement('a');
   link.href = path;
   link.textContent = text;
-  link.dataset.link = '';
+
+  if (path === '/login') {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      logInModal();
+    });
+  } else {
+    link.dataset.link = '';
+  }
+
   const currentPath = window.location.pathname;
   link.className =
     'px-3 py-2 mx-1 rounded-md text-sm font-medium ' +

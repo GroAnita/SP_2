@@ -1,8 +1,10 @@
 import Listings from '../views/listings.js';
 import Header from '../components/header.js';
+import ListingDetail from '../views/listingDetail.js';
 
 const routes = {
   '/': Listings,
+  '/ListingDetail': ListingDetail,
 };
 
 export default function router() {
@@ -27,6 +29,14 @@ export default function router() {
 
   const view = routes[path] || Listings;
   const page = view();
+
+  if (path === '/listing') {
+    const data = JSON.parse(localStorage.getItem('selectedListing'));
+    const view = ListingDetail(data);
+    app.innerHTML = '';
+    app.appendChild(view);
+    return;
+  }
 
   // HANDLE ASYNC + SYNC
   if (page instanceof Promise) {
