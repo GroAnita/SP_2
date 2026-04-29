@@ -1,7 +1,6 @@
 import { updateCountdown } from '../utils/countDown.js';
 import { imageFallback } from '../utils/imageFallback.js';
 import ListingDetail from '../views/listingDetail.js';
-import listingModal from './listingModal.js';
 
 export default function ListingCard(listing, isFeatured = false) {
   const fallback = `${import.meta.env.BASE_URL}images/lemonmascot-1.png`;

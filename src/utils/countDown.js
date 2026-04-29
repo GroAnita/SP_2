@@ -54,13 +54,13 @@ export function updateCountdown(timeEl, endTime) {
     const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
 
     if (weeks > 0) {
-      timeEl.textContent = `⏳ ${weeks}w ${days}d`;
+      timeEl.textContent = `Auction ends in: ${weeks}w ${days}d`;
     } else if (days > 0) {
-      timeEl.textContent = `⏳ ${days}d ${hours}h`;
+      timeEl.textContent = `Auction ends in: ${days}d ${hours}h`;
     } else if (hours > 0) {
-      timeEl.textContent = `⏳ ${hours}h ${minutes}m`;
+      timeEl.textContent = `Auction ends in: ${hours}h ${minutes}m`;
     } else {
-      timeEl.textContent = `⏳ ${minutes}m ${seconds}s`;
+      timeEl.textContent = `Auction ends in: ${minutes}m ${seconds}s`;
     }
   }
 
