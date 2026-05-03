@@ -20,7 +20,10 @@ export default async function apiClient(endpoint, options = {}) {
       headers,
     });
 
-    const results = await response.json();
+    let results = null;
+    if (response.status !== 204) {
+      results = await response.json();
+    }
 
     if (!response.ok) {
       throw new Error(`API error: ${response.status} ${response.statusText}`);

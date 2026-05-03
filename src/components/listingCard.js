@@ -1,8 +1,10 @@
 import { updateCountdown } from '../utils/countDown.js';
 import { imageFallback } from '../utils/imageFallback.js';
-import ListingDetail from '../views/listingDetail.js';
 
 export default function ListingCard(listing, isFeatured = false) {
+  const bids = listing.bids || [];
+  const media = listing.media || [];
+
   const fallback = `${import.meta.env.BASE_URL}images/lemonmascot-1.png`;
   const card = document.createElement('div');
 
@@ -36,7 +38,7 @@ export default function ListingCard(listing, isFeatured = false) {
     badge.className = 'bg-primary text-black px-2 py-1 font-bold rounded w-fit';
 
     const title = document.createElement('h2');
-    title.textContent = listing.title;
+    title.textContent = listing.title || 'Untitled Listing';
     title.className = 'text-lg font-bold';
 
     const bid = document.createElement('p');
@@ -87,10 +89,18 @@ export default function ListingCard(listing, isFeatured = false) {
   const time = document.createElement('span');
   time.className = 'text-xs';
 
-  const endTime = new Date(listing.endsAt);
+  if (!listing.endsAt) {
+    time.textContent = 'No end time';
+  } else {
+    const endTime = new Date(listing.endsAt);
 
-  const intervalId = updateCountdown(time, endTime);
-  time._intervalId = intervalId;
+    if (!isNaN(endTime.getTime())) {
+      const intervalId = updateCountdown(time, endTime);
+      time._intervalId = intervalId;
+    } else {
+      time.textContent = 'Invalid end time';
+    }
+  }
 
   content.appendChild(title);
   content.appendChild(bid);

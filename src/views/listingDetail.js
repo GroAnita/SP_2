@@ -1,6 +1,10 @@
 import { updateCountdown } from '../utils/countDown.js';
+import bidModal from '../components/bidModal.js';
+import { getAuthState } from '../state/authState.js';
+import getHighestBidder from '../utils/getHighestBidder.js';
 
 export default function ListingDetail(listing) {
+  const currentUser = getAuthState();
   const container = document.createElement('div');
   container.className = 'container flex flex-col gap-6 w-full mx-auto p-4';
 
@@ -12,7 +16,7 @@ export default function ListingDetail(listing) {
       : [{ url: fallback }];
 
   const title = document.createElement('h1');
-  title.className = 'text-3xl font-bold mb-4';
+  title.className = 'text-3xl text-text font-bold mb-4';
   title.textContent = listing.title;
 
   const gallery = document.createElement('div');
@@ -71,21 +75,21 @@ export default function ListingDetail(listing) {
   sellerWrapper.className = 'flex items-center gap-3';
 
   const sellerImg = document.createElement('img');
-  sellerImg.src = listing.seller?.profileImage || fallback;
-  sellerImg.alt = listing.seller?.username || 'Seller Image';
+  sellerImg.src = listing.seller?.avatar?.url || fallback;
+  sellerImg.alt = listing.seller?.name || 'Seller Image';
   sellerImg.className = 'w-12 h-12 rounded-full  mb-2 object-cover';
 
   const sellerInfo = document.createElement('div');
   sellerInfo.className = 'flex flex-col items-start';
 
   const sellerName = document.createElement('p');
-  sellerName.textContent = `Seller: ${listing.seller?.username || 'Unknown'}`;
+  sellerName.textContent = `Seller: ${listing.seller?.name || 'Unknown'}`;
   sellerName.className = 'text-sm text-text';
 
   const sellerRating = document.createElement('p');
   const rating = listing.seller?.rating || 0;
   sellerRating.textContent = `Rating: ${rating.toFixed(1)} ⭐`;
-  sellerRating.className = 'text-xs text-text/80';
+  sellerRating.className = 'text-xs text-text';
 
   sellerInfo.appendChild(sellerName);
   sellerInfo.appendChild(sellerRating);
@@ -100,7 +104,7 @@ export default function ListingDetail(listing) {
 
   const description = document.createElement('p');
   description.textContent = listing.description || 'No description available.';
-  description.className = 'mb-4 text-sm text-text/80 text-center';
+  description.className = 'mb-4 text-sm text-text text-center';
 
   const bid = document.createElement('p');
   bid.textContent = `Current Bid: ${listing.bids?.length ? Math.max(...listing.bids.map((b) => b.amount)) : 0} credits`;
@@ -112,21 +116,58 @@ export default function ListingDetail(listing) {
 
   const bidWrapper = document.createElement('div');
   bidWrapper.className = 'text-2xl font-bold text-secondary';
-  bidWrapper.textContent = bid.textContent;
+  const bidderStatus = document.createElement('p');
+  bidderStatus.className = 'text-sm text-green-500 mt-1';
 
+  const highest = listing.bids?.length
+    ? listing.bids.reduce((max, b) => (b.amount > max.amount ? b : max))
+    : null;
+
+  const highestBidder = getHighestBidder(listing.bids);
+  if (highest?.bidder?.name === currentUser?.name) {
+    bidderStatus.textContent = 'You are the highest bidder!';
+  } else {
+    bidderStatus.textContent = '';
+  }
+
+  bidWrapper.appendChild(bid);
   bidWrapper.appendChild(itemBids);
+  bidWrapper.appendChild(bidderStatus);
 
   const bidBtn = document.createElement('button');
   bidBtn.className =
-    'mt-4 bg-primary text-text font-bold py-2 w-full rounded-lg border-2 border-text hover:scale-105 transition';
+    'mt-4 bg-primary text-gray-900 font-bold py-2 w-full rounded-lg border-2 border-text hover:scale-105 transition';
   bidBtn.textContent = 'Place Bid';
+
+  bidBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    bidModal(listing);
+  });
+
+  const bidHistory = document.createElement('div');
+  bidHistory.className = 'mt-4 flex flex-col gap-2 text-sm text-text text-left';
+
+  function renderBidItem(bid) {
+    const row = document.createElement('div');
+    row.className = 'flex justify-between border-b border-text pb-1';
+
+    const name = document.createElement('span');
+    name.textContent = bid.bidder?.name || 'Unknown Bidder';
+
+    const amount = document.createElement('span');
+    amount.textContent = `${bid.amount} credits`;
+
+    row.appendChild(name);
+    row.appendChild(amount);
+    return row;
+  }
 
   const shippingSection = document.createElement('div');
   shippingSection.className = 'flex flex-col gap-3 text-left';
 
   const shippingTitle = document.createElement('h3');
-  shippingTitle.textContent = 'Shipping Information';
-  shippingTitle.className = 'text-sm font-bold uppercase text-text/70';
+  shippingTitle.textContent = '';
+  shippingTitle.className = 'text-sm font-bold uppercase text-text';
 
   shippingSection.appendChild(shippingTitle);
   shippingSection.appendChild(createDivider());
@@ -192,6 +233,9 @@ export default function ListingDetail(listing) {
   info.appendChild(bidBtn);
 
   info.appendChild(createDivider());
+  info.appendChild(createSection('Bid History', bidHistory));
+
+  info.appendChild(createDivider());
   info.appendChild(createSection('Shipping & Returns', shippingSection));
 
   const contentRow = document.createElement('div');
@@ -203,5 +247,31 @@ export default function ListingDetail(listing) {
   container.appendChild(title);
   container.appendChild(contentRow);
 
+  const isActive = new Date(listing.endsAt) > new Date();
+  if (!isActive) {
+    bidBtn.disabled = true;
+    bidBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    bidBtn.textContent = 'Auction Ended';
+  }
+
+  document.addEventListener('bid:placed', (e) => {
+    const newBid = e.detail;
+    console.log('New bid placed:', newBid);
+    listing.bids = listing.bids || [];
+    listing.bids.push(newBid);
+
+    const highestBidder = getHighestBidder(listing.bids);
+    if (highestBidder?.bidder?.name === currentUser?.name) {
+      bidderStatus.textContent = 'You are the highest bidder!';
+    } else {
+      bidderStatus.textContent = '';
+    }
+
+    const newRow = renderBidItem(newBid);
+    bidHistory.prepend(newRow);
+    const highestBid = Math.max(...listing.bids.map((b) => b.amount));
+    bid.textContent = `Current Bid: ${highestBid} credits`;
+    itemBids.textContent = `(${listing.bids.length} bids)`;
+  });
   return container;
 }

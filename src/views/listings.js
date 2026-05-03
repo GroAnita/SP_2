@@ -6,7 +6,7 @@ export default async function Listings() {
   container.className = 'container w-2/3 mx-auto p-4  ';
 
   const title = document.createElement('h1');
-  title.className = 'text-3xl font-bold mb-4';
+  title.className = 'text-3xl text-text font-poppins font-bold mb-4';
   title.textContent = 'Listings';
   const listingGrid = document.createElement('div');
   listingGrid.className =
@@ -17,11 +17,26 @@ export default async function Listings() {
   container.appendChild(title);
   container.appendChild(listingGrid);
 
+  const now = new Date();
+
   try {
     const result = await fetchListings();
     console.log('Fetched listings:', result);
     console.log('First listing:', result.data[0]);
-    const listings = result.data;
+    const listings = result.data.sort((a, b) => {
+      const now = new Date();
+
+      const aActive = new Date(a.endsAt) > now;
+      const bActive = new Date(b.endsAt) > now;
+
+      // Active first
+      if (aActive && !bActive) return -1;
+      if (!aActive && bActive) return 1;
+
+      // 🔥 NEWEST FIRST (for both active + inactive)
+      return new Date(b.created) - new Date(a.created);
+    });
+
     listingGrid.innerHTML = '';
     listings.forEach((listing, index) => {
       const isFeatured = index === 4;
@@ -33,6 +48,5 @@ export default async function Listings() {
     listingGrid.innerHTML =
       '<p>Error loading listings. Please try again later.</p>';
   }
-
   return container;
 }

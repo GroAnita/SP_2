@@ -58,9 +58,18 @@ export default function logInModal() {
 
   const newUserLink = document.createElement('p');
   newUserLink.className = 'text-sm mt-4 text-center text-text';
-  newUserLink.innerHTML =
-    'Don\'t have an account? <a href="/register" class="text-secondary hover:underline" data-link>Register here</a>.';
 
+  const link = document.createElement('a');
+  link.href = '/register';
+  link.className = 'text-secondary mx-auto hover:underline';
+  link.textContent = 'Register here';
+  link.setAttribute('data-link', '');
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    modal.remove();
+  });
+
+  newUserLink.append("Don't have an account? ", link, '.');
   const forgotPasswordLink = document.createElement('p');
   forgotPasswordLink.className = 'text-sm mt-2 text-center text-text';
   forgotPasswordLink.innerHTML =
@@ -89,7 +98,6 @@ export default function logInModal() {
         email: username,
         password: password,
       });
-      alert('Login successful!');
       modal.remove();
     } catch (error) {
       alert(error.message || 'Login failed. Please try again.');
@@ -101,6 +109,7 @@ export default function logInModal() {
   form.appendChild(passwordInput);
   form.appendChild(submitBtn);
   form.appendChild(newUserLink);
+
   form.appendChild(forgotPasswordLink);
   form.appendChild(closeBtn);
   content.appendChild(closeBtn);

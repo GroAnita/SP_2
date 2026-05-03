@@ -11,6 +11,7 @@ export default {
     'bg-success',
     'bg-error',
     'bg-header',
+    'btntext',
   ],
   theme: {
     extend: {

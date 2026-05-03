@@ -1,10 +1,11 @@
-import { apiClient } from './apiClient.js';
+import apiClient from './apiClient.js';
 
 export async function createListing(data) {
-  return await apiClient('/auction/listings', {
+  const response = await apiClient('/auction/listings', {
     method: 'POST',
     body: JSON.stringify(data),
   });
+  return response.data;
 }
 
 export async function fetchSingleListing(id) {

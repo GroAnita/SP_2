@@ -5,4 +5,7 @@ export default defineConfig({
   build: {
     outDir: 'docs',
   },
+  server: {
+    historyApiFallback: true,
+  },
 });

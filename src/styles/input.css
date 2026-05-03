@@ -53,7 +53,7 @@ body {
     @apply text-lg text-text font-inter;
   }
   .card-time {
-    @apply text-xs text-text bg-success rounded-full px-2 py-1 self-start;
+    @apply text-xs text-text bg-green-700 rounded-full px-2 py-1 self-start;
   }
   .card-time-ended {
     @apply text-xs text-error py-1 self-start;

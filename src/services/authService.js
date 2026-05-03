@@ -12,18 +12,16 @@ export async function registerUser(data) {
       body: JSON.stringify(data),
     });
 
-    const json = await response.json();
-
+    const result = await response.json();
     if (!response.ok) {
-      throw new Error(json.error || 'Registration failed');
+      throw new Error(
+        result.errors?.[0]?.message || 'Registration failed. Please try again.'
+      );
     }
 
-    return json.data;
+    return result;
   } catch (error) {
-    throw new Error(
-      error.message ||
-        'An error occurred during registration. Please try again later.'
-    );
+    throw error;
   }
 }
 

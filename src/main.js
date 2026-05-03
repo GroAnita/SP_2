@@ -1,5 +1,7 @@
 import './styles/input.css';
 import router from './router/router.js';
+import navigate from './utils/navigate.js';
+
 const prefersDarkMode = window.matchMedia(
   '(prefers-color-scheme: dark)'
 ).matches;
@@ -14,11 +16,12 @@ document.body.addEventListener('click', (e) => {
   if (!link) return;
   e.preventDefault();
   const path = link.getAttribute('href');
-  window.history.pushState({}, '', path);
+  navigate(path);
+});
+
+document.addEventListener('auth:changed', () => {
   router();
 });
 
 window.addEventListener('DOMContentLoaded', router);
 window.addEventListener('popstate', router);
-
-router();
