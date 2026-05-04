@@ -139,20 +139,54 @@ export default function ListingDetail(listing) {
     'mt-4 bg-primary text-gray-900 font-bold py-2 w-full rounded-lg border-2 border-text hover:scale-105 transition';
   bidBtn.textContent = 'Place Bid';
 
+  const user = getAuthState();
+  const isOwner = listing.seller?.name === user?.name;
+
+  if (isOwner) {
+    bidBtn.disabled = true;
+    bidBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    bidBtn.textContent = 'You cannot bid on your own listing';
+  }
+
   bidBtn.addEventListener('click', (e) => {
     e.preventDefault();
+
+    const user = getAuthState();
+    if (listing.seller?.name === user?.name) {
+      showToast('You cannot bid on your own listing.', 'warning');
+      return;
+    }
     bidModal(listing);
   });
 
   const bidHistory = document.createElement('div');
   bidHistory.className = 'mt-4 flex flex-col gap-2 text-sm text-text text-left';
 
+  if (listing.bids?.length) {
+    const sortedBids = [...listing.bids].sort((a, b) => b.amount - a.amount);
+    sortedBids.forEach((bid) => {
+      const row = renderBidItem(bid);
+      bidHistory.appendChild(row);
+    });
+  } else {
+    const noBids = document.createElement('p');
+    noBids.textContent = 'No bids placed yet. Be the first to bid!';
+    noBids.className = 'text-text italic';
+    bidHistory.appendChild(noBids);
+  }
+
   function renderBidItem(bid) {
     const row = document.createElement('div');
     row.className = 'flex justify-between border-b border-text pb-1';
 
     const name = document.createElement('span');
-    name.textContent = bid.bidder?.name || 'Unknown Bidder';
+    name.textContent = bid.bidder?.name === currentUser?.name;
+    const isYou = bid.bidder?.name === currentUser?.name;
+    name.textContent = isYou ? 'You' : bid.bidder?.name || 'Unknown Bidder';
+
+    if (isYou) {
+      name.classList.add('font-bold', 'text-green-500');
+    }
 
     const amount = document.createElement('span');
     amount.textContent = `${bid.amount} credits`;

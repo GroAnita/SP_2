@@ -1,8 +1,10 @@
 import { deleteListing } from '../services/listingFetchService.js';
 import showToast from '../ui/showToast.js';
 import getHighestBidder from '../utils/getHighestBidder.js';
+import { getAuthState } from '../state/authState.js';
 
-export default function OwnListingCard(listing) {
+export default function myBidsCard(listing) {
+  const user = getAuthState();
   const card = document.createElement('div');
   card.className =
     'bg-card border-2 h-full border-text rounded-lg p-4 flex flex-col gap-4 relative group';
@@ -109,6 +111,13 @@ export default function OwnListingCard(listing) {
   price.className = 'text-lg font-bold text-secondary';
   price.textContent = `Current Bid: $${highestBid} Coins`;
 
+  const isWinning = highest?.bidder?.name === user.name;
+  const statusText = document.createElement('p');
+  statusText.className = isWinning ? 'text-green-500' : 'text-red-500';
+  statusText.textContent = isWinning
+    ? 'You are currently winning this auction!'
+    : 'You have been outbid on this auction.';
+
   header.appendChild(title);
   header.appendChild(status);
   card.appendChild(header);
@@ -116,6 +125,7 @@ export default function OwnListingCard(listing) {
   infoContainer.appendChild(image);
   bidSection.appendChild(price);
   bidSection.appendChild(soldText);
+  bidSection.appendChild(statusText);
   infoContainer.appendChild(bidSection);
   card.appendChild(infoContainer);
   return card;

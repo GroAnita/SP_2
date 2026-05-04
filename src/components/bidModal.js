@@ -1,7 +1,14 @@
 import { placeBid } from '../services/bidService.js';
 import showToast from '../ui/showToast.js';
+import { getAuthState } from '../state/authState.js';
 
 export default function bidModal(listing) {
+  const user = getAuthState();
+  if (!user) {
+    showToast('You must be logged in to place a bid.', 'warning');
+    return;
+  }
+
   const modal = document.createElement('div');
   modal.className =
     'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
@@ -36,6 +43,11 @@ export default function bidModal(listing) {
   submitButton.className =
     'bg-primary text-text px-4 py-2 border border-text rounded hover:bg-primary-dark transition';
   submitButton.textContent = 'Place Bid';
+
+  if (listing.seller?.name === user?.name) {
+    showToast('You cannot bid on your own listing.', 'warning');
+    return;
+  }
 
   form.appendChild(bidInput);
   form.appendChild(submitButton);
