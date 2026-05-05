@@ -2,17 +2,19 @@ import logInModal from './logInModal.js';
 import { getAuthState } from '../state/authState.js';
 import { logoutUser } from '../services/authService.js';
 import { fetchMyProfile } from '../services/profileService.js';
+import hamburgerMenu from './hamburgerMenu.js';
 
 export default function Header() {
   const user = getAuthState();
   const base = import.meta.env.BASE_URL;
   const fallback = `${import.meta.env.BASE_URL}images/lemonmascot-1.png`;
   const header = document.createElement('header');
-  header.className = '  flex flex-col justify-between items-center';
+  header.className =
+    ' fixed top-0 left-0 w-full z-50 flex flex-col justify-between items-center';
 
   const topHeader = document.createElement('div');
   topHeader.className =
-    'bg-header p-4 flex justify-between items-center w-full';
+    'bg-header p-4 flex flex-col md:flex-row justify-between items-center w-full';
 
   const imgContainer = document.createElement('div');
   imgContainer.className = 'flex items-center';
@@ -27,46 +29,62 @@ export default function Header() {
   const searchInput = document.createElement('input');
   searchInput.type = 'text';
   searchInput.placeholder = 'Search listings...';
-  searchInput.className = 'input hidden md:block md:w-[600px]';
+  searchInput.className = 'input md:block md:w-[600px]';
+
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const query = searchInput.value.trim();
+      if (!query) return;
+      const base = import.meta.env.BASE_URL || '';
+      history.pushState(
+        {},
+        '',
+        `${base}listings?q=${encodeURIComponent(query)}`
+      );
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    }
+  });
 
   const nav = document.createElement('nav');
+
+  /** Dark mode toggle section*/
+  const toggleWrapper = document.createElement('div');
+  toggleWrapper.className = 'relative group flex items-center';
+
+  const tooltip = document.createElement('span');
+  tooltip.textContent = 'Theme';
+  tooltip.className =
+    'absolute top-[30px] left-1/2 -translate-x-1/2 bg-primary text-text text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity';
+
   const toggleButton = document.createElement('i');
   toggleButton.className =
-    'fa-solid fa-moon text-2xl text-primary cursor-pointer mr-4';
+    'text-xl text-primary mr-4 transition-transform duration-500 ease-in-out hover:scale-110 cursor-pointer mr-4';
 
   const isDarkMode = document.documentElement.classList.contains('dark');
-  toggleButton.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
+  toggleButton.innerHTML = isDarkMode
+    ? '<i class="fa-regular fa-sun"></i>'
+    : '<i class="fa-solid fa-moon"></i>';
 
   toggleButton.addEventListener('click', () => {
     const isDarkMode = document.documentElement.classList.toggle('dark');
+
     localStorage.setItem('mode', isDarkMode ? 'dark' : 'light');
-    toggleButton.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
+
+    // Animate spin
+    toggleButton.classList.add('rotate-180');
+
+    setTimeout(() => {
+      toggleButton.innerHTML = isDarkMode
+        ? '<i class="fa-regular fa-sun"></i>'
+        : '<i class="fa-solid fa-moon"></i>';
+
+      toggleButton.classList.remove('rotate-180');
+    }, 200);
   });
 
-  const hamburger = document.createElement('i');
-  hamburger.className =
-    'fa-solid fa-bars text-2xl text-primary cursor-pointer md:hidden';
-
-  const bottomHeader = document.createElement('div');
-  bottomHeader.className =
-    'flex items-center justify-between p-2 w-full bg-bottomnav';
-
-  const left = document.createElement('div');
-  left.className = 'flex-1';
-
-  const center = document.createElement('div');
-  center.className = 'flex justify-center flex-1';
-
-  const right = document.createElement('div');
-  right.className = 'flex items-center gap-4 flex-1 justify-end';
-
-  center.appendChild(createNavLink('Home', '/'));
-  center.appendChild(createNavLink('Listings', '/listings'));
-  if (user) {
-    center.appendChild(createNavLink('Logout', '/logout'));
-  } else {
-    center.appendChild(createNavLink('Login', '/login'));
-  }
+  const profileContainer = document.createElement('div');
+  profileContainer.className = 'flex items-center gap-4';
 
   const userName = document.createElement('a');
   userName.className = 'text-sm text-primary font-semibold cursor-pointer';
@@ -76,7 +94,7 @@ export default function Header() {
 
   const coins = document.createElement('div');
   coins.className =
-    'bg-primary text-grey-900 px-3 py-1 rounded-full font-bold text-sm';
+    'bg-header text-primary px-3 py-1 border-2 border-primary rounded-full font-bold text-sm';
   coins.textContent = '...';
   if (user) {
     fetchMyProfile()
@@ -90,32 +108,46 @@ export default function Header() {
     coins.style.display = 'none';
   }
 
+  const avatarLink = document.createElement('a');
+  avatarLink.href = '/profile';
+  avatarLink.dataset.link = '';
+  avatarLink.addEventListener('click', (e) => {
+    if (!user) {
+      e.preventDefault();
+      logInModal();
+    }
+  });
+
   const avatar = document.createElement('img');
   avatar.src = user?.avatar?.url || fallback;
   avatar.alt = 'User Avatar';
   avatar.className = 'w-8 h-8 rounded-full object-cover';
 
-  right.prepend(avatar);
+  const hamburger = document.createElement('i');
+  hamburger.className =
+    'fa-solid fa-bars text-2xl text-primary cursor-pointer ';
+  hamburger.addEventListener('click', () => {
+    hamburgerMenu();
+  });
 
-  right.appendChild(userName);
-  right.appendChild(coins);
-
-  bottomHeader.appendChild(left);
-  bottomHeader.appendChild(center);
-  bottomHeader.appendChild(right);
-
-  nav.appendChild(toggleButton);
-  nav.appendChild(hamburger);
+  toggleWrapper.appendChild(tooltip);
+  toggleWrapper.appendChild(toggleButton);
+  profileContainer.appendChild(avatarLink);
+  avatarLink.appendChild(avatar);
+  profileContainer.appendChild(toggleWrapper);
 
   imgContainer.appendChild(logo);
   topHeader.appendChild(imgContainer);
-  nav.appendChild(toggleButton);
-  nav.appendChild(hamburger);
-  imgContainer.appendChild(title);
   topHeader.appendChild(searchInput);
+
+  profileContainer.appendChild(coins);
+
+  profileContainer.appendChild(hamburger);
+  imgContainer.appendChild(title);
+
+  topHeader.appendChild(profileContainer);
   topHeader.appendChild(nav);
   header.appendChild(topHeader);
-  header.appendChild(bottomHeader);
 
   document.addEventListener('credits:updated', async () => {
     const profile = await fetchMyProfile();
@@ -149,8 +181,8 @@ function createNavLink(text, path) {
   link.className =
     'px-3 py-2 mx-1 rounded-md text-sm font-medium ' +
     (currentPath === path
-      ? 'bg-primary text-[--color-btn-text]'
-      : 'text-primary hover:bg-primary hover:text-[--color-btn-text]');
+      ? 'bg-primary text-text'
+      : 'text-text hover:bg-primary hover:text-text');
 
   return link;
 }

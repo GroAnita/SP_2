@@ -61,7 +61,6 @@ export default function OwnListingCard(listing) {
       card.remove();
       showToast('Listing deleted successfully.');
     } catch (error) {
-      console.log('Delete failed:', error);
       showToast('Failed to delete listing. Please try again later.');
     }
   });

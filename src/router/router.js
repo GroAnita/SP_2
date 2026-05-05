@@ -5,6 +5,7 @@ import Register from '../views/register.js';
 import Profile from '../views/profile.js';
 import { getAuthState } from '../state/authState.js';
 import navigate from '../utils/navigate.js';
+import showToast from '../ui/showToast.js';
 
 const routes = {
   '/': { view: Listings },
@@ -20,6 +21,7 @@ const routes = {
 
 export default function router() {
   const app = document.getElementById('app');
+  app.classList.add('pt-32');
   const headerContainer = document.getElementById('header');
 
   const base = '/SP_2';

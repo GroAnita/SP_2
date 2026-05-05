@@ -2,12 +2,66 @@ import listingCard from '../components/listingCard.js';
 import { fetchListings } from '../services/listingService.js';
 
 export default async function Listings() {
+  const params = new URLSearchParams(window.location.search);
+  const query = params.get('q');
+
   const container = document.createElement('div');
   container.className = 'container w-2/3 mx-auto p-4  ';
 
   const title = document.createElement('h1');
   title.className = 'text-3xl text-text font-poppins font-bold mb-4';
   title.textContent = 'Listings';
+
+  const filterContainer = document.createElement('section');
+  filterContainer.className = 'flex justify-end mb-4 gap-4';
+
+  const filterSelect = document.createElement('select');
+  filterSelect.className =
+    'input w-48 bg-card border-2 border-primary text-text focus:ring-primary';
+  filterSelect.innerHTML = `
+    <option value="">Sort By</option>
+    <option value="newest">Newest</option>
+    <option value="ending-soon">Ending Soon</option>
+    <option value="active">Active First</option>
+  `;
+
+  filterSelect.addEventListener('change', () => {
+    const value = filterSelect.value;
+    let sortedListings = Array.from(
+      container.querySelectorAll('.listing-card')
+    );
+
+    if (value === 'newest') {
+      sortedListings.sort((a, b) => {
+        const aDate = new Date(a.dataset.created);
+        const bDate = new Date(b.dataset.created);
+        return bDate - aDate;
+      });
+    } else if (value === 'ending-soon') {
+      sortedListings.sort((a, b) => {
+        const aEndsAt = new Date(a.dataset.endsAt);
+        const bEndsAt = new Date(b.dataset.endsAt);
+        return aEndsAt - bEndsAt;
+      });
+    } else if (value === 'active') {
+      const now = new Date();
+      sortedListings.sort((a, b) => {
+        const aActive = new Date(a.dataset.endsAt) > now;
+        const bActive = new Date(b.dataset.endsAt) > now;
+
+        if (aActive && !bActive) return -1;
+        if (!aActive && bActive) return 1;
+
+        return 0;
+      });
+    }
+
+    sortedListings.forEach((card) => container.appendChild(card));
+  });
+
+  filterContainer.appendChild(filterSelect);
+  container.appendChild(filterContainer);
+
   const listingGrid = document.createElement('div');
   listingGrid.className =
     'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-8 auto-rows-[300px] h-full relative';
@@ -21,9 +75,26 @@ export default async function Listings() {
 
   try {
     const result = await fetchListings();
-    console.log('Fetched listings:', result);
-    console.log('First listing:', result.data[0]);
-    const listings = result.data.sort((a, b) => {
+
+    let listings = result.data;
+    if (query) {
+      listings = listings.filter((listing) => {
+        const title = listing.title?.toLowerCase() || '';
+        const description = listing.description?.toLowerCase() || '';
+
+        return (
+          title.includes(query.toLowerCase()) ||
+          description.includes(query.toLowerCase())
+        );
+      });
+      title.textContent = `Search results for "${query}"`;
+    }
+    if (!listings.length) {
+      listingGrid.innerHTML = '<p>No listings found.</p>';
+      return container;
+    }
+
+    listings = listings.sort((a, b) => {
       const now = new Date();
 
       const aActive = new Date(a.endsAt) > now;

@@ -7,6 +7,11 @@ import myBidsCard from '../components/myBidsCard.js';
 
 export default async function Profile() {
   const user = getAuthState();
+  const params = new URLSearchParams(window.location.search);
+  const tab = params.get('tab');
+  let cachedListings = null;
+  let cachedBids = null;
+
   const container = document.createElement('div');
   container.className = 'w-full mx-auto p-4';
 
@@ -16,7 +21,7 @@ export default async function Profile() {
 
   const profileInfoContainer = document.createElement('section');
   profileInfoContainer.className =
-    'flex bg-secondary p-4 rounded items-center gap-6';
+    'flex flex-col md:flex-row bg-header p-4 rounded items-center justify-center gap-6';
 
   const fallback = `${import.meta.env.BASE_URL}images/lemonmascot-1.png`;
   const profileImage = document.createElement('img');
@@ -27,7 +32,7 @@ export default async function Profile() {
 
   const profileInfo = document.createElement('section');
   profileInfo.className =
-    'bg-primary border-2 border-text text-gray-900 rounded-lg p-4 max-w-md w-full';
+    'bg-card border-2 border-text text-text rounded-lg p-4 max-w-md w-full';
   profileInfo.innerHTML = `
       <h2 class="text-2xl font-poppins font-semibold mb-2">User Information</h2>
       <p><strong>Name:</strong> ${user?.name || 'Unknown'}</p>
@@ -66,8 +71,14 @@ export default async function Profile() {
   myBidsButton.textContent = 'My Bids';
 
   myBidsButton.addEventListener('click', async () => {
+    const base = import.meta.env.BASE_URL || '';
+    history.pushState({}, '', `${base}profile?tab=bids`);
+
     setActiveButton(myBidsButton, ownListingButton);
-    ownListingSection.innerHTML = 'Loading...';
+    if (!cachedBids) {
+      cachedBids = await fetchMyBidsListings();
+    }
+    renderListings(cachedBids, myBidsCard);
     try {
       const listings = await fetchMyBidsListings();
       ownListingSection.innerHTML = '';
@@ -84,7 +95,13 @@ export default async function Profile() {
   });
 
   ownListingButton.addEventListener('click', async () => {
+    const base = import.meta.env.BASE_URL || '';
+    history.pushState({}, '', `${base}profile?tab=listings`);
     setActiveButton(ownListingButton, myBidsButton);
+    if (!cachedListings) {
+      cachedListings = await fetchOwnListings();
+    }
+    renderListings(cachedListings, OwnListingCard);
     try {
       const listings = await fetchOwnListings();
       renderListings(listings, OwnListingCard);
@@ -94,19 +111,28 @@ export default async function Profile() {
   });
 
   function renderListings(listings, cardComponent) {
-    ownListingSection.innerHTML = '';
-    if (listings.length === 0) {
-      ownListingSection.textContent = 'No listings found.';
-      return;
-    }
-    listings.forEach((listing) => {
-      ownListingSection.appendChild(cardComponent(listing));
-    });
+    // fade out
+    ownListingSection.classList.add('opacity-0');
+
+    setTimeout(() => {
+      ownListingSection.innerHTML = '';
+
+      if (listings.length === 0) {
+        ownListingSection.textContent = 'No listings found.';
+      } else {
+        listings.forEach((listing) => {
+          ownListingSection.appendChild(cardComponent(listing));
+        });
+      }
+
+      // fade in
+      ownListingSection.classList.remove('opacity-0');
+    }, 150);
   }
 
   const ownListingSection = document.createElement('section');
   ownListingSection.className =
-    'mt-6 md:w-2/3 grid grid-cols-1 auto-rows h-full mx-auto md:grid-cols-1 gap-4';
+    'mt-6 md:w-2/3 grid grid-cols-1 auto-rows h-full mx-auto md:grid-cols-1 gap-4 transition-opacity duration-300';
 
   container.appendChild(title);
   container.appendChild(profileInfoContainer);
@@ -121,13 +147,21 @@ export default async function Profile() {
   container.appendChild(ownListingSection);
 
   try {
-    const listings = await fetchOwnListings();
-    listings.forEach((listing) => {
-      ownListingSection.appendChild(OwnListingCard(listing));
-    });
+    if (tab === 'bids') {
+      setActiveButton(myBidsButton, ownListingButton);
+
+      const listings = await fetchMyBidsListings();
+      renderListings(listings, myBidsCard);
+    } else {
+      // default = listings
+      setActiveButton(ownListingButton, myBidsButton);
+
+      const listings = await fetchOwnListings();
+      renderListings(listings, OwnListingCard);
+    }
   } catch (error) {
     ownListingSection.textContent =
-      'Error loading your listings. Please try again later.';
+      'Error loading data. Please try again later.';
   }
   return container;
 }

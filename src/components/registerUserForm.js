@@ -143,7 +143,7 @@ export default function RegisterUserForm() {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    console.log('SUBMIT FIRED');
+
     const formData = {
       username: userNameInput.value.trim(),
       address: addressInput.value.trim(),
@@ -153,8 +153,6 @@ export default function RegisterUserForm() {
       passwordConfirm: passwordConfirmInput.value,
     };
 
-    console.log('FORM DATA:', formData);
-
     const result = validateRegisterForm(formData);
     if (!result.valid) {
       showToast(result.message || 'invalid form', 'error');
@@ -162,7 +160,6 @@ export default function RegisterUserForm() {
     }
 
     try {
-      console.log('CALLING API...');
       await registerUser({
         name: formData.username,
         email: formData.email,

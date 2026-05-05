@@ -173,7 +173,7 @@ export default function CreateNewListing() {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    console.log('SUBMIT FIRED');
+
     const title = titleInput.value.trim();
     const description = descriptionInput.value.trim();
     const endDate = new Date(endDateInput.value);

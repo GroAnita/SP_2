@@ -74,7 +74,7 @@ export default function bidModal(listing) {
     }
     try {
       const result = await placeBid(listing.id, bidAmount);
-      console.log('BID SUCCESS:', result);
+
       showToast('Bid placed successfully!');
       document.body.removeChild(modal);
       document.dispatchEvent(

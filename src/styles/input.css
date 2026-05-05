@@ -6,34 +6,41 @@ body {
   @apply font-inter;
 }
 
-/*Light Mode*/
 :root {
-  --color-bg: #f3f3f3;
-  --color-text: #1f2937;
-  --color-card: #f3f4f6;
-  --color-primary: #fff200;
-  --color-secondary: #f59e0b;
-  --color-success: #38f504;
+  --color-bg: #f9fafb; /* cleaner background */
+  --color-text: #1f2937; /* keep your dark */
+  --color-card: #ffffff; /* proper card contrast */
+
+  --color-primary: #fff200; /* your lemon 🍋 */
+  --color-secondary: #f59e0b; /* orange (better than old amber) */
+
+  --color-success: #22c55e; /* softer, modern green */
   --color-error: #ef4444;
-  --color-header: #3c3c3c;
+
+  --color-header: #1f2937; /* unify with dark */
   --color-btn-text: #1f2937;
-  --color-border: #1f2937;
-  --color-bottom-nav: #3c3c3c;
+
+  --color-border: #e5e7eb; /* subtle borders */
+  --color-bottom-nav: #ffffff;
 }
 
-/*Dark Mode*/
 .dark {
-  --color-header: #3c3c3c;
-  --color-bg: #1f2937;
-  --color-text: #f3f4f6;
-  --color-btn: #1f2937;
-  --color-card: #374151;
+  --color-bg: #111827; /* deeper than your old */
+  --color-text: #f9fafb;
+
+  --color-card: #1f2937; /* your base reused nicely */
+
   --color-primary: #fff200;
   --color-secondary: #f59e0b;
-  --color-success: #38f504;
+
+  --color-success: #22c55e;
   --color-error: #ef4444;
+
+  --color-header: #020617; /* more premium feel */
   --color-btn-text: #1f2937;
-  --color-border: #facc15;
+
+  --color-border: #374151;
+  --color-bottom-nav: #020617;
 }
 
 @layer components {
@@ -90,7 +97,7 @@ body {
     @apply bg-error;
   }
   .input {
-    @apply bg-card text-text rounded-lg shadow-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary;
+    @apply bg-primary text-text rounded-lg shadow-md p-3 w-full focus:outline-none focus:border-none focus:ring-2 focus:ring-primary;
   }
   .input:focus {
     @apply ring-primary;

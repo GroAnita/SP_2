@@ -290,7 +290,7 @@ export default function ListingDetail(listing) {
 
   document.addEventListener('bid:placed', (e) => {
     const newBid = e.detail;
-    console.log('New bid placed:', newBid);
+
     listing.bids = listing.bids || [];
     listing.bids.push(newBid);
 
