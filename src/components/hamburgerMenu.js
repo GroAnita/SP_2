@@ -151,6 +151,9 @@ export default function hamburgerMenu() {
   // BUILD MODAL
   container.appendChild(closeButton);
   container.appendChild(userSection);
+  userSection.appendChild(userInfo);
+  userInfo.appendChild(userName);
+  userInfo.appendChild(userEmail);
   container.appendChild(actionBtnSection);
   container.appendChild(menuList);
 
