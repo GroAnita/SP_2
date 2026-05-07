@@ -59,7 +59,7 @@ export default function Header() {
 
   const toggleButton = document.createElement('i');
   toggleButton.className =
-    'text-xl text-primary mr-4 transition-transform duration-500 ease-in-out hover:scale-110 cursor-pointer mr-4';
+    'text-xl text-primary mr-4 transition-transform duration-500 ease-in-out hover:scale-110 cursor-pointer mr-4 items-center justify-center';
 
   const isDarkMode = document.documentElement.classList.contains('dark');
   toggleButton.innerHTML = isDarkMode

@@ -1,6 +1,7 @@
 import { deleteListing } from '../services/listingFetchService.js';
 import showToast from '../ui/showToast.js';
 import getHighestBidder from '../utils/getHighestBidder.js';
+import editOwnListing from './editOwnListing.js';
 
 export default function OwnListingCard(listing) {
   const card = document.createElement('div');
@@ -34,6 +35,19 @@ export default function OwnListingCard(listing) {
   deleteOption.className =
     'px-4 py-2 text-left hover:bg-red-500 hover:text-white';
 
+  const relistBtn = document.createElement('button');
+  relistBtn.type = 'button';
+  relistBtn.className = 'px-4 py-2 text-left hover:bg-secondary';
+  relistBtn.textContent = 'Relist';
+  relistBtn.addEventListener('click', () => {
+    editOwnListing(listing, { relist: true });
+  });
+
+  const isEnded = new Date(listing?.endsAt) < new Date();
+  if (isEnded) {
+    dropdown.appendChild(relistBtn);
+  }
+
   dropdown.appendChild(editOption);
   dropdown.appendChild(deleteOption);
 
@@ -49,6 +63,11 @@ export default function OwnListingCard(listing) {
   editWrapper.appendChild(editButton);
   editWrapper.appendChild(dropdown);
   header.appendChild(editWrapper);
+
+  editOption.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    editOwnListing(listing);
+  });
 
   deleteOption.addEventListener('click', async (e) => {
     e.stopPropagation();

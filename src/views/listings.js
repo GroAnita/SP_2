@@ -1,6 +1,40 @@
 import listingCard from '../components/listingCard.js';
 import { fetchListings } from '../services/listingService.js';
 
+let page = 0;
+const limit = 17;
+let isLastPage = false;
+let isLoading = false;
+
+async function loadListings() {
+  if (isLoading || isLastPage) return;
+  isLoading = true;
+  try {
+    const result = await fetchListings({ page, limit });
+    const listings = result.data;
+
+    if (listings.length < limit) {
+      isLastPage = true;
+    }
+
+    listings.forEach((listing, index) => {
+      const isFeatured = page === 0 && index === 4;
+      const cardEl = listingCard(listing, isFeatured);
+      listingGrid.appendChild(cardEl);
+    });
+
+    page++;
+  } catch (error) {
+    console.error('Error fetching listings:', error);
+    if (page === 0) {
+      listingGrid.innerHTML =
+        '<p>Error loading listings. Please try again later.</p>';
+    }
+  } finally {
+    isLoading = false;
+  }
+}
+
 export default async function Listings() {
   const params = new URLSearchParams(window.location.search);
   const query = params.get('q');
@@ -68,8 +102,25 @@ export default async function Listings() {
 
   listingGrid.innerHTML = '<p>Loading...</p>';
 
+  const pagination = document.createElement('div');
+  pagination.className = 'flex justify-center mt-6 gap-4';
+
+  const prevButton = document.createElement('button');
+  prevButton.className =
+    'px-4 py-2 bg-primary text-text rounded-full disabled:bg-gray-400';
+  prevButton.textContent = 'Previous';
+
+  const nextButton = document.createElement('button');
+  nextButton.className =
+    'px-4 py-2 bg-primary text-text rounded-full disabled:bg-gray-400';
+  nextButton.textContent = 'Next';
+
   container.appendChild(title);
   container.appendChild(listingGrid);
+
+  pagination.appendChild(prevButton);
+  pagination.appendChild(nextButton);
+  container.appendChild(pagination);
 
   const now = new Date();
 
@@ -119,5 +170,6 @@ export default async function Listings() {
     listingGrid.innerHTML =
       '<p>Error loading listings. Please try again later.</p>';
   }
+
   return container;
 }

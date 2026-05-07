@@ -23,13 +23,6 @@ export async function createProfile(data) {
   });
 }
 
-export async function updateProfile(name, data) {
-  return await apiClient(`/auction/profiles/${name}`, {
-    method: 'PUT',
-    body: JSON.stringify(data),
-  });
-}
-
 export async function deleteProfile(name) {
   return await apiClient(`/auction/profiles/${name}`, {
     method: 'DELETE',
