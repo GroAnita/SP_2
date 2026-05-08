@@ -25,7 +25,7 @@ export default function editOwnListing(listing = null, options = {}) {
 
   const imageContent = document.createElement('div');
   imageContent.className =
-    'flex flex-col items-start justify-start w-full md:w-1/2 p-6 bg-card rounded-lg relative flex-1 mt-4';
+    'flex flex-col items-start justify-start w-full md:w-1/2 p-6 bg-card rounded-lg flex-1 mt-4';
 
   const modalTitle = document.createElement('h2');
   modalTitle.className = 'text-2xl font-bold mb-4';
@@ -202,7 +202,7 @@ export default function editOwnListing(listing = null, options = {}) {
 
   const closeButton = document.createElement('button');
   closeButton.className =
-    'absolute top-2 right-2 text-gray-500 hover:text-gray-700';
+    'absolute top-2 right-2 text-2xl text-gray-500 hover:text-gray-700';
   closeButton.innerHTML = '&times;';
   closeButton.addEventListener('click', () => {
     modal.remove();

@@ -55,6 +55,7 @@ export default function bidModal(listing) {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const bidAmount = parseFloat(bidInput.value);
+    console.log('BID AMOUNT:', bidAmount, typeof bidAmount);
     if (isNaN(bidAmount) || bidAmount <= 0) {
       alert('Please enter a valid bid amount.');
       return;
@@ -74,15 +75,29 @@ export default function bidModal(listing) {
     }
     try {
       const result = await placeBid(listing.id, bidAmount);
+      if (!result) return;
 
       showToast('Bid placed successfully!');
       document.body.removeChild(modal);
       document.dispatchEvent(
-        new CustomEvent('bid:placed', { detail: result.data })
+        new CustomEvent('bid:placed', {
+          detail: {
+            listingId: listing.id,
+            bid: result.data,
+          },
+        })
       );
+      const myBids = JSON.parse(localStorage.getItem('myBids') || '[]');
+      myBids.push({
+        listingId: listing.id,
+        amount: bidAmount,
+        time: new Date().toISOString(),
+      });
+      localStorage.setItem('myBids', JSON.stringify(myBids));
     } catch (error) {
       console.error('BID ERROR:', error);
       showToast('Failed to place bid. Please try again.');
+      return;
     }
   });
 

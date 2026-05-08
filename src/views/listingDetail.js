@@ -2,11 +2,51 @@ import { updateCountdown } from '../utils/countDown.js';
 import bidModal from '../components/bidModal.js';
 import { getAuthState } from '../state/authState.js';
 import getHighestBidder from '../utils/getHighestBidder.js';
+import { fetchSingleListing } from '../services/createListingService.js';
+import Breadcrumbs from '../components/breadcrumbs.js';
+import showToast from '../ui/showToast.js';
 
+/**
+ * Creates and renders the Listing Detail view.
+ *
+ * This view displays:
+ * - Listing title, images, and description
+ * - Seller information
+ * - Current bid and bid history
+ * - Countdown timer for auction end
+ * - Bid button with validation (no self-bidding, disabled if ended)
+ *
+ * It also:
+ * - Listens for `bid:placed` events to refresh the listing data
+ * - Updates bid history and UI dynamically after a new bid
+ *
+ * @function ListingDetail
+ * @param {Object} listing - The listing object to display
+ * @param {string} listing.id - Unique listing ID
+ * @param {string} listing.title - Listing title
+ * @param {string} [listing.description] - Listing description
+ * @param {Array<Object>} [listing.media] - Array of media objects
+ * @param {Array<Object>} [listing.bids] - Array of bid objects
+ * @param {Object} listing.seller - Seller information
+ * @param {string} listing.endsAt - ISO date string for auction end
+ *
+ * @returns {HTMLElement} A fully constructed DOM element for the listing detail page
+ *
+ * @example
+ * const view = ListingDetail(listingData);
+ * document.getElementById('app').appendChild(view);
+ */
 export default function ListingDetail(listing) {
   const currentUser = getAuthState();
   const container = document.createElement('div');
   container.className = 'container flex flex-col gap-6 w-full mx-auto p-4';
+
+  const breadcrumbs = Breadcrumbs([
+    { label: 'Home', path: '/' },
+    { label: 'Listings', path: '/listings' },
+    { label: listing.title },
+  ]);
+  container.appendChild(breadcrumbs);
 
   const fallback = `${import.meta.env.BASE_URL}images/lemonmascot-1.png`;
 
@@ -180,7 +220,6 @@ export default function ListingDetail(listing) {
     row.className = 'flex justify-between border-b border-text pb-1';
 
     const name = document.createElement('span');
-    name.textContent = bid.bidder?.name === currentUser?.name;
     const isYou = bid.bidder?.name === currentUser?.name;
     name.textContent = isYou ? 'You' : bid.bidder?.name || 'Unknown Bidder';
 
@@ -287,25 +326,49 @@ export default function ListingDetail(listing) {
     bidBtn.classList.add('opacity-50', 'cursor-not-allowed');
     bidBtn.textContent = 'Auction Ended';
   }
+  function handleBidPlaced(e) {
+    console.log('EVENT FIRED', e.detail);
+    console.log('LISTING ID', listing.id);
+    // 👇 VERY important: only react if THIS listing was updated
+    if (e.detail.listingId !== listing.id) return;
 
-  document.addEventListener('bid:placed', (e) => {
-    const newBid = e.detail;
+    refreshListing();
+  }
 
-    listing.bids = listing.bids || [];
-    listing.bids.push(newBid);
+  async function refreshListing() {
+    try {
+      const updated = await fetchSingleListing(listing.id);
 
-    const highestBidder = getHighestBidder(listing.bids);
-    if (highestBidder?.bidder?.name === currentUser?.name) {
-      bidderStatus.textContent = 'You are the highest bidder!';
-    } else {
-      bidderStatus.textContent = '';
+      listing.bids = updated.data?.bids || updated.bids;
+
+      bidHistory.innerHTML = '';
+
+      const safeBids = Array.isArray(listing.bids) ? listing.bids : [];
+      const sortedBids = [...safeBids].sort((a, b) => b.amount - a.amount);
+
+      sortedBids.forEach((bidItem) => {
+        bidHistory.appendChild(renderBidItem(bidItem));
+      });
+
+      // update numbers
+      const highestBid = Math.max(...listing.bids.map((b) => b.amount));
+      bid.textContent = `Current Bid: ${highestBid} credits`;
+      itemBids.textContent = `(${listing.bids.length} bids)`;
+
+      // update status
+      const highestBidder = getHighestBidder(listing.bids);
+      if (highestBidder?.bidder?.name === currentUser?.name) {
+        bidderStatus.textContent = 'You are the highest bidder!';
+      } else {
+        bidderStatus.textContent = '';
+      }
+    } catch (err) {
+      console.error('Failed to refresh listing after bid', err);
     }
+  }
 
-    const newRow = renderBidItem(newBid);
-    bidHistory.prepend(newRow);
-    const highestBid = Math.max(...listing.bids.map((b) => b.amount));
-    bid.textContent = `Current Bid: ${highestBid} credits`;
-    itemBids.textContent = `(${listing.bids.length} bids)`;
-  });
+  document.removeEventListener('bid:placed', handleBidPlaced);
+  document.addEventListener('bid:placed', handleBidPlaced);
+
   return container;
 }

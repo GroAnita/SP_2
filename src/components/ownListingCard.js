@@ -28,16 +28,16 @@ export default function OwnListingCard(listing) {
 
   const editOption = document.createElement('button');
   editOption.textContent = 'Edit';
-  editOption.className = 'px-4 py-2 text-left hover:bg-secondary';
+  editOption.className = 'px-4 py-2 text-left text-text hover:bg-secondary';
 
   const deleteOption = document.createElement('button');
   deleteOption.textContent = 'Delete';
   deleteOption.className =
-    'px-4 py-2 text-left hover:bg-red-500 hover:text-white';
+    'px-4 py-2 text-left text-text hover:bg-red-500 hover:text-white';
 
   const relistBtn = document.createElement('button');
   relistBtn.type = 'button';
-  relistBtn.className = 'px-4 py-2 text-left hover:bg-secondary';
+  relistBtn.className = 'px-4 py-2 text-left text-text hover:bg-secondary';
   relistBtn.textContent = 'Relist';
   relistBtn.addEventListener('click', () => {
     editOwnListing(listing, { relist: true });

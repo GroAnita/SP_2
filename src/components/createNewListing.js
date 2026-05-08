@@ -148,13 +148,26 @@ export default function CreateNewListing() {
   modalContent.appendChild(modalTitle);
   imageContent.appendChild(closeButton);
   modalContent.appendChild(form);
-  form.appendChild(createFormField('Title', titleInput));
-  form.appendChild(createFormField('Description', descriptionInput));
-  form.appendChild(createFormField('Tags', tagsWrapper));
-  form.appendChild(createFormField('Starting Price', priceInput));
-  form.appendChild(createFormField('Start Date', startDateInput));
-  form.appendChild(createFormField('End Date', endDateInput));
-  imageContent.appendChild(createFormField('Image URL', imageUrlInput));
+  const titleObj = createFormField('Title', titleInput);
+  form.appendChild(titleObj.wrapper);
+
+  const descriptionObj = createFormField('Description', descriptionInput);
+  form.appendChild(descriptionObj.wrapper);
+
+  const tagsObj = createFormField('Tags', tagsWrapper);
+  form.appendChild(tagsObj.wrapper);
+
+  const priceObj = createFormField('Starting Price', priceInput);
+  form.appendChild(priceObj.wrapper);
+
+  const startDateObj = createFormField('Start Date', startDateInput);
+  form.appendChild(startDateObj.wrapper);
+
+  const endDateObj = createFormField('End Date', endDateInput);
+  form.appendChild(endDateObj.wrapper);
+
+  const imageUrlObj = createFormField('Image URL', imageUrlInput);
+  imageContent.appendChild(imageUrlObj.wrapper);
   createButtonWrapper.appendChild(addImageButton);
   form.appendChild(imageContent);
   imageContent.appendChild(imageGrid);
@@ -176,10 +189,14 @@ export default function CreateNewListing() {
 
     const title = titleInput.value.trim();
     const description = descriptionInput.value.trim();
-    const endDate = new Date(endDateInput.value);
     const media = images.map((url) => ({ url }));
-
-    const endsAt = endDate.toISOString();
+    let endsAt = null;
+    if (endDateInput.value) {
+      const d = new Date(endDateInput.value);
+      if (!isNaN(d.getTime())) {
+        endsAt = d.toISOString();
+      }
+    }
 
     if (!title || isNaN(endDate.getTime())) {
       showToast('Title and end date are required');

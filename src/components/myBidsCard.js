@@ -6,6 +6,10 @@ import { getAuthState } from '../state/authState.js';
 export default function myBidsCard(listing) {
   const user = getAuthState();
   const card = document.createElement('div');
+  if (!listing || listing.title) {
+    console.warn('Invalid listing data:', listing);
+    return document.createElement('div'); // Return empty div for invalid data
+  }
   card.className =
     'bg-card border-2 h-full border-text rounded-lg p-4 flex flex-col gap-4 relative group';
 
@@ -29,12 +33,12 @@ export default function myBidsCard(listing) {
 
   const editOption = document.createElement('button');
   editOption.textContent = 'Edit';
-  editOption.className = 'px-4 py-2 text-left hover:bg-secondary';
+  editOption.className = 'px-4 py-2 text-left text-text hover:bg-secondary';
 
   const deleteOption = document.createElement('button');
   deleteOption.textContent = 'Delete';
   deleteOption.className =
-    'px-4 py-2 text-left hover:bg-red-500 hover:text-white';
+    'px-4 py-2 text-left text-text hover:bg-red-500 hover:text-white';
 
   dropdown.appendChild(editOption);
   dropdown.appendChild(deleteOption);

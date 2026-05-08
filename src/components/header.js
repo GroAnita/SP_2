@@ -29,7 +29,7 @@ export default function Header() {
   const searchInput = document.createElement('input');
   searchInput.type = 'text';
   searchInput.placeholder = 'Search listings...';
-  searchInput.className = 'input md:block md:w-[600px]';
+  searchInput.className = 'input hidden md:block md:w-[600px]';
 
   searchInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {

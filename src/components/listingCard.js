@@ -81,9 +81,9 @@ export default function ListingCard(listing, isFeatured = false) {
   bid.textContent = `Highest Bid: ${getHighestBid(listing.bids)} credits`;
   bid.className = 'text-xs';
 
-  const favorite = document.createElement('i');
+  /*const favorite = document.createElement('i');
   favorite.className =
-    'fa-solid fa-heart absolute top-2 right-2 text-pink-500 text-xl opacity-70 hover:opacity-100 transition';
+    'fa-solid fa-heart absolute top-2 right-2 text-pink-500 text-xl opacity-70 hover:opacity-100 transition';*/
 
   // TIME
   const time = document.createElement('span');
@@ -107,7 +107,7 @@ export default function ListingCard(listing, isFeatured = false) {
   content.appendChild(time);
 
   card.appendChild(image);
-  card.appendChild(favorite);
+  /*card.appendChild(favorite);*/
   card.appendChild(overlay);
   card.appendChild(content);
 
@@ -117,9 +117,4 @@ export default function ListingCard(listing, isFeatured = false) {
 function getHighestBid(bids = []) {
   if (!bids.length) return 0;
   return Math.max(...bids.map((bid) => bid.amount));
-}
-
-function truncateText(text, maxLength) {
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength) + '...';
 }

@@ -6,6 +6,7 @@ import { fetchMyBidsListings } from '../services/fetchMyBidsListings.js';
 import myBidsCard from '../components/myBidsCard.js';
 import { updateProfile } from '../services/profileUpdateService.js';
 import showToast from '../ui/showToast.js';
+import Breadcrumbs from '../components/breadcrumbs.js';
 
 export default async function Profile() {
   const user = getAuthState();
@@ -16,6 +17,13 @@ export default async function Profile() {
 
   const container = document.createElement('div');
   container.className = 'w-full mx-auto p-4';
+
+  const breadcrumbs = Breadcrumbs([
+    { label: 'Home', path: '/' },
+    { label: 'Profile' },
+  ]);
+
+  container.appendChild(breadcrumbs);
 
   const profileInfoContainer = document.createElement('section');
   profileInfoContainer.className +=
@@ -168,20 +176,8 @@ export default async function Profile() {
     if (!cachedBids) {
       cachedBids = await fetchMyBidsListings();
     }
+
     renderListings(cachedBids, myBidsCard);
-    try {
-      const listings = await fetchMyBidsListings();
-      ownListingSection.innerHTML = '';
-      listings.forEach((listing) => {
-        ownListingSection.appendChild(myBidsCard(listing));
-      });
-      if (!listings.length) {
-        ownListingSection.textContent = 'No bids found.';
-      }
-    } catch (error) {
-      ownListingSection.textContent =
-        'Error loading your bids. Please try again later.';
-    }
   });
 
   ownListingButton.addEventListener('click', async () => {
@@ -192,12 +188,6 @@ export default async function Profile() {
       cachedListings = await fetchOwnListings();
     }
     renderListings(cachedListings, OwnListingCard);
-    try {
-      const listings = await fetchOwnListings();
-      renderListings(listings, OwnListingCard);
-    } catch (error) {
-      showToast('Error loading your listings. Please try again later.');
-    }
   });
 
   function renderListings(listings, cardComponent) {
@@ -211,6 +201,10 @@ export default async function Profile() {
         ownListingSection.textContent = 'No listings found.';
       } else {
         listings.forEach((listing) => {
+          if (!listing || !listing.title) {
+            console.warn('Skipping invalid listing:', listing);
+            return;
+          }
           ownListingSection.appendChild(cardComponent(listing));
         });
       }
@@ -245,7 +239,10 @@ export default async function Profile() {
       setActiveButton(myBidsButton, ownListingButton);
 
       const listings = await fetchMyBidsListings();
-      renderListings(listings, myBidsCard);
+      renderListings(
+        listings.map((bid) => bid.listing),
+        myBidsCard
+      );
     } else {
       // default = listings
       setActiveButton(ownListingButton, myBidsButton);
@@ -257,5 +254,23 @@ export default async function Profile() {
     ownListingSection.textContent =
       'Error loading data. Please try again later.';
   }
+
+  function handleBidPlaced() {
+    const params = new URLSearchParams(window.location.search);
+    const currentTab = params.get('tab');
+    if (currentTab !== 'bids') return;
+    refreshMyBids();
+  }
+
+  async function refreshMyBids() {
+    try {
+      cachedBids = await fetchMyBidsListings();
+      renderListings(cachedBids, myBidsCard);
+    } catch (error) {
+      showToast('Error refreshing bids. Please try again later.', 'error');
+    }
+  }
+  document.addEventListener('bid:placed', handleBidPlaced);
+
   return container;
 }

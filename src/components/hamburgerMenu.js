@@ -139,6 +139,27 @@ export default function hamburgerMenu() {
     actionBtnSection.appendChild(logInButton);
   }
 
+  const searchInputMobile = document.createElement('input');
+  searchInputMobile.type = 'text';
+  searchInputMobile.placeholder = 'Search...';
+  searchInputMobile.className = 'input block md:hidden w-full mt-4';
+
+  searchInputMobile.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const query = searchInputMobile.value.trim();
+      if (!query) return;
+      const base = import.meta.env.BASE_URL || '';
+      history.pushState(
+        {},
+        '',
+        `${base}listings?q=${encodeURIComponent(query)}`
+      );
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      modal.remove();
+    }
+  });
+
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
       container.classList.add('translate-x-full');
@@ -156,6 +177,7 @@ export default function hamburgerMenu() {
   userInfo.appendChild(userEmail);
   container.appendChild(actionBtnSection);
   container.appendChild(menuList);
+  container.appendChild(searchInputMobile);
 
   modal.appendChild(container);
   document.body.appendChild(modal);

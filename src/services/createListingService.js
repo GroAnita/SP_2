@@ -9,7 +9,7 @@ export async function createListing(data) {
 }
 
 export async function fetchSingleListing(id) {
-  return await apiClient(`/auction/listings/${id}`);
+  return await apiClient(`/auction/listings/${id}?_bids=true`);
 }
 
 export async function fetchListingById(id) {
