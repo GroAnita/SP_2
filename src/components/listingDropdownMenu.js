@@ -23,13 +23,13 @@ export default function listingDropdownMenu({
   edit.textContent = 'Edit';
 
   edit.className =
-    'px-4 py-2 hover:bg-primary rounded-md text-left transition-colors';
+    'px-4 py-2 hover:bg-primary hover:text-gray-500 rounded-md text-text text-left transition-colors';
 
   const del = document.createElement('button');
   del.textContent = 'Delete';
 
   del.className =
-    'px-4 py-2 hover:bg-red-500 rounded-md hover:text-white text-left transition-colors';
+    'px-4 py-2 hover:bg-red-500 text-text rounded-md hover:text-white text-left transition-colors';
 
   menu.append(edit, del);
 
@@ -39,7 +39,7 @@ export default function listingDropdownMenu({
     relist.textContent = 'Relist';
 
     relist.className =
-      'px-4 py-2 hover:bg-green-500 rounded-md hover:text-white text-left transition-colors';
+      'px-4 py-2 hover:bg-green-500 rounded-md text-text hover:text-white text-left transition-colors';
 
     relist.addEventListener('click', () => {
       menu.classList.add('hidden');

@@ -152,7 +152,7 @@ export default async function Listings() {
   async function handleBidPlaced(e) {
     const { listingId } = e.detail;
     try {
-      const updated = await fetchListings({ page, limit });
+      const updated = await fetchListings({ page, limit, query });
       const updatedListing = updated.data.find((l) => l.id === listingId);
       if (!updatedListing) return;
 
@@ -195,18 +195,17 @@ export default async function Listings() {
     listingGrid.innerHTML = '<p>Loading...</p>';
 
     try {
-      const result = await fetchListings({ page, limit });
+      const result = await fetchListings({ page, limit: query ? 100 : limit });
 
       currentListings = result.data;
       let listings = [...currentListings];
-
-      // 🔍 FILTER
       if (query) {
         listings = listings.filter((listing) => {
-          const t = listing.title?.toLowerCase() || '';
-          const d = listing.description?.toLowerCase() || '';
+          const title = listing.title?.toLowerCase() || '';
+          const description = listing.description?.toLowerCase() || '';
           return (
-            t.includes(query.toLowerCase()) || d.includes(query.toLowerCase())
+            title.includes(query.toLowerCase()) ||
+            description.includes(query.toLowerCase())
           );
         });
       }

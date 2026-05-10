@@ -1,12 +1,14 @@
 import apiClient from './apiClient.js';
 
-const baseURL = 'https://v2.api.noroff.dev';
-
-export async function fetchListings({ page = 1, limit = 17 } = {}) {
+export async function fetchListings({ page = 1, limit = 17, query = '' } = {}) {
   try {
-    const result = await apiClient(
-      `/auction/listings?page=${page}&limit=${limit}&sort=created&sortOrder=desc&_bids=true&_seller=true`
-    );
+    let endpoint = `/auction/listings?page=${page}&limit=${limit}&sort=created&sortOrder=desc&_bids=true&_seller=true`;
+
+    if (query) {
+      endpoint += `&q=${encodeURIComponent(query)}`;
+    }
+
+    const result = await apiClient(endpoint);
 
     return result;
   } catch (error) {
