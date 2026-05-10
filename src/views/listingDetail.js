@@ -36,8 +36,13 @@ import showToast from '../ui/showToast.js';
  * const view = ListingDetail(listingData);
  * document.getElementById('app').appendChild(view);
  */
-export default function ListingDetail(listing) {
+export default async function ListingDetail() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  const result = await fetchSingleListing(id);
   const currentUser = getAuthState();
+  const listing = result.data || result;
+
   const container = document.createElement('div');
   container.className = 'container flex flex-col gap-6 w-full mx-auto p-4';
 
@@ -60,10 +65,11 @@ export default function ListingDetail(listing) {
   title.textContent = listing.title;
 
   const gallery = document.createElement('div');
-  gallery.className = 'flex gap-4 h-96';
+  gallery.className = 'flex flex-col md:flex-row gap-4 md:h-96 w-full';
 
   const thumbs = document.createElement('div');
-  thumbs.className = 'flex flex-col gap-2 w-20 overflow-hidden';
+  thumbs.className =
+    'flex flex-row md:flex-col w-full gap-2 md:w-20 overflow-x-auto md:overflow-hidden';
 
   const mainImageWrapper = document.createElement('div');
   mainImageWrapper.className =
@@ -77,7 +83,7 @@ export default function ListingDetail(listing) {
     const thumb = document.createElement('img');
     thumb.src = item.url || fallback;
     thumb.className =
-      'w-full h-16 object-cover cursor-pointer rounded opacity-70 hover:opacity-100 transition ';
+      'w-16 h-16 md:w-full object-cover cursor-pointer rounded opacity-70 hover:opacity-100 transition flex-shrink-0';
 
     if (index === 0) {
       thumb.classList.add('ring-2', 'ring-primary', 'opacity-100');

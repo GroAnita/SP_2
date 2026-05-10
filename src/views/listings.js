@@ -39,6 +39,7 @@ export default async function Listings() {
   const params = new URLSearchParams(window.location.search);
   const query = params.get('q');
   let currentListings = [];
+  const id = params.get('id');
 
   const container = document.createElement('div');
   container.className = 'container w-2/3 mx-auto p-4  ';

@@ -7,6 +7,8 @@ import {
   createTextareaWithIcon,
 } from '../utils/createInputWithIcon.js';
 import updateListing from '../services/listingFetchService.js';
+import listingDropdownMenu from './listingDropdownMenu.js';
+import optimizeImageUrl from '../utils/optimizeImageUrl.js';
 
 export default function editOwnListing(listing = null, options = {}) {
   const hasBids = listing?.bids?.length > 0;
@@ -169,6 +171,40 @@ export default function editOwnListing(listing = null, options = {}) {
   const imageGrid = document.createElement('div');
   imageGrid.className = 'grid grid-cols-4 gap-2 mt-2 w-full';
 
+  function renderImage(url) {
+    const imageWrapper = document.createElement('div');
+
+    imageWrapper.className = 'relative';
+
+    const img = document.createElement('img');
+
+    img.src = optimizeImageUrl(url, 300);
+
+    img.className = 'w-full aspect-square object-cover rounded';
+
+    const removeBtn = document.createElement('button');
+
+    removeBtn.innerHTML = '&times;';
+
+    removeBtn.className =
+      'absolute top-1 right-1 bg-black/70 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-red-500 transition';
+
+    removeBtn.addEventListener('click', () => {
+      const index = images.indexOf(url);
+
+      if (index > -1) {
+        images.splice(index, 1);
+      }
+
+      imageWrapper.remove();
+    });
+
+    imageWrapper.appendChild(img);
+    imageWrapper.appendChild(removeBtn);
+
+    imageGrid.appendChild(imageWrapper);
+  }
+
   addImageButton.addEventListener('click', () => {
     const url = imageUrlInput.value.trim();
     if (!url) return;
@@ -178,17 +214,14 @@ export default function editOwnListing(listing = null, options = {}) {
     }
     images.push(url);
     const img = document.createElement('img');
-    img.src = url;
+    img.src = optimizeImageUrl(url, 300);
     img.className = 'w-full aspect-square object-cover rounded';
     imageGrid.appendChild(img);
     imageUrlInput.value = '';
   });
 
   images.forEach((url) => {
-    const img = document.createElement('img');
-    img.src = url;
-    img.className = 'w-full aspect-square object-cover rounded';
-    imageGrid.appendChild(img);
+    renderImage(url);
   });
 
   const imageUrlInput = document.createElement('input');

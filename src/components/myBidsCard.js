@@ -2,134 +2,96 @@ import { deleteListing } from '../services/listingFetchService.js';
 import showToast from '../ui/showToast.js';
 import getHighestBidder from '../utils/getHighestBidder.js';
 import { getAuthState } from '../state/authState.js';
+import listingCardBase from './listingCardBase.js';
+import listingDropdownMenu from './listingDropdownMenu.js';
 
-export default function myBidsCard(listing) {
+/**
+ * Creates a card element for a listing the user has bid on.
+ *
+ * Displays:
+ * - Listing title and image
+ * - Current highest bid
+ * - Auction status (active / ended)
+ * - Winning status for the current user
+ * - Bid outcome (sold / not sold)
+ *
+ * Features:
+ * - Dropdown menu (edit/delete)
+ * - Delete functionality with confirmation
+ * - Dynamic UI based on auction state
+ *
+ * Behavior:
+ * - If listing data is invalid → returns empty element
+ * - Highlights if current user is the highest bidder
+ * - Shows different states for active vs ended auctions
+ *
+ * Dependencies:
+ * - deleteListing() → deletes listing via API
+ * - getHighestBidder() → calculates highest bidder
+ * - getAuthState() → retrieves current user
+ * - showToast() → displays success/error messages
+ *
+ * @function myBidsCard
+ *
+ * @param {Object} listing - Listing object
+ * @param {string} listing.id - Listing ID
+ * @param {string} listing.title - Listing title
+ * @param {string} listing.endsAt - Auction end date (ISO string)
+ * @param {Array<Object>} listing.bids - Array of bids
+ * @param {Array<Object>} [listing.media] - Listing images
+ *
+ * @returns {HTMLElement} Rendered card element
+ *
+ * @example
+ * const card = myBidsCard(listing);
+ * container.appendChild(card);
+ */
+export default function MyBidsCard(listing) {
   const user = getAuthState();
-  const card = document.createElement('div');
-  if (!listing || listing.title) {
-    console.warn('Invalid listing data:', listing);
-    return document.createElement('div'); // Return empty div for invalid data
-  }
-  card.className =
-    'bg-card border-2 h-full border-text rounded-lg p-4 flex flex-col gap-4 relative group';
-
-  const header = document.createElement('div');
-  header.className = 'flex items-center justify-between';
-
-  const title = document.createElement('h2');
-  title.className = 'text-xl text-text font-semibold';
-  title.textContent = listing.title;
-
-  const editWrapper = document.createElement('div');
-  editWrapper.className = 'absolute top-2 right-2';
-
-  const editButton = document.createElement('button');
-  editButton.className = 'text-text px-2 py-1 text-lg';
-  editButton.textContent = '⋯';
-
-  const dropdown = document.createElement('div');
-  dropdown.className =
-    'absolute right-0 mt-2 bg-card border border-text rounded shadow-md hidden flex flex-col z-50';
-
-  const editOption = document.createElement('button');
-  editOption.textContent = 'Edit';
-  editOption.className = 'px-4 py-2 text-left text-text hover:bg-secondary';
-
-  const deleteOption = document.createElement('button');
-  deleteOption.textContent = 'Delete';
-  deleteOption.className =
-    'px-4 py-2 text-left text-text hover:bg-red-500 hover:text-white';
-
-  dropdown.appendChild(editOption);
-  dropdown.appendChild(deleteOption);
-
-  editButton.addEventListener('click', (e) => {
-    e.stopPropagation();
-    dropdown.classList.toggle('hidden');
-  });
-
-  document.addEventListener('click', () => {
-    dropdown.classList.add('hidden');
-  });
-
-  editWrapper.appendChild(editButton);
-  editWrapper.appendChild(dropdown);
-  header.appendChild(editWrapper);
-
-  deleteOption.addEventListener('click', async (e) => {
-    e.stopPropagation();
-    const confirmDelete = confirm(
-      'Are you sure you want to delete this listing?'
-    );
-    if (!confirmDelete) return;
-    try {
-      await deleteListing(listing.id);
-      card.remove();
-      showToast('Listing deleted successfully.');
-    } catch (error) {
-      showToast('Failed to delete listing. Please try again later.');
-    }
-  });
-
-  const now = new Date();
-  const isActive = new Date(listing.endsAt) > now;
-
-  const status = document.createElement('span');
-  status.className =
-    'text-sm font-medium px-2 py-1 mr-6 rounded-full ' +
-    (isActive ? 'bg-green-600 text-green-100' : 'bg-red-600 text-red-100');
-  status.textContent = isActive ? 'Active' : 'Ended';
-
-  const highest = getHighestBidder(listing.bids);
-
-  const soldText = document.createElement('p');
-  soldText.className = 'text-sm text-text mt-1';
-  if (isActive) {
-    soldText.textContent = 'Auction is live';
-  } else {
-    if (highest) {
-      soldText.textContent = `Sold to ${highest.bidder?.name || 'Unknown'} for $${highest.amount} Coins`;
-    } else {
-      soldText.textContent = 'Not sold';
-    }
-  }
-
-  const infoContainer = document.createElement('div');
-  infoContainer.className = 'flex items-center gap-4';
-
-  const image = document.createElement('img');
-  image.alt = listing.title || 'Listing Image';
-  image.className = 'w-32 h-32 object-cover rounded';
-  const fallback = 'https://via.placeholder.com/400x300?text=No+Image';
-  image.src = listing.media?.[0]?.url || fallback;
-
-  const bidSection = document.createElement('div');
-  bidSection.className = 'flex flex-col gap-2';
-
+  const isOwner = listing.seller?.name === user?.name;
   const highestBid = listing.bids?.length
-    ? Math.max(...listing.bids.map((bid) => bid.amount))
+    ? Math.max(...listing.bids.map((b) => b.amount))
     : 0;
 
-  const price = document.createElement('p');
-  price.className = 'text-lg font-bold text-secondary';
-  price.textContent = `Current Bid: $${highestBid} Coins`;
+  const userBid = listing.bids?.find(
+    (bid) => bid.bidder?.name === listing._user?.name
+  );
 
-  const isWinning = highest?.bidder?.name === user.name;
-  const statusText = document.createElement('p');
-  statusText.className = isWinning ? 'text-green-500' : 'text-red-500';
-  statusText.textContent = isWinning
-    ? 'You are currently winning this auction!'
-    : 'You have been outbid on this auction.';
+  const isWinner = userBid && userBid.amount === highestBid;
 
-  header.appendChild(title);
-  header.appendChild(status);
-  card.appendChild(header);
+  const isActive = new Date(listing.endsAt) > new Date();
 
-  infoContainer.appendChild(image);
-  bidSection.appendChild(price);
-  bidSection.appendChild(soldText);
-  bidSection.appendChild(statusText);
-  infoContainer.appendChild(bidSection);
-  card.appendChild(infoContainer);
-  return card;
+  const dropdown = listingDropdownMenu({
+    listing,
+    ...(isOwner && {
+      onDelete: async () => {
+        await deleteListing(listing.id);
+      },
+    }),
+  });
+
+  const extraContent = document.createElement('div');
+  extraContent.className = 'flex flex-col gap-2';
+
+  // status
+  const status = document.createElement('p');
+
+  status.className = 'text-sm font-medium';
+
+  if (isActive) {
+    status.textContent = 'Auction Active';
+    status.classList.add('text-green-500');
+  } else {
+    status.textContent = isWinner ? 'You Won 🎉' : 'You Lost';
+
+    status.classList.add(isWinner ? 'text-green-500' : 'text-red-500');
+  }
+
+  extraContent.appendChild(status);
+
+  return listingCardBase(listing, {
+    headerRight: dropdown,
+    extraContent,
+    titleLink: `/listing?id=${listing.id}`,
+  });
 }

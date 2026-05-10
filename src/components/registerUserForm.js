@@ -69,14 +69,15 @@ export default function RegisterUserForm() {
   passwordInput.name = 'password';
   passwordInput.placeholder = 'Password';
   passwordInput.autocomplete = 'new-password';
-  passwordInput.className = 'input border-2 border-primary w-full mb-4';
+  passwordInput.className = 'input border-2 border-primary bg-card w-full mb-4';
 
   const passwordConfirmInput = document.createElement('input');
   passwordConfirmInput.type = 'password';
   passwordConfirmInput.name = 'passwordConfirm';
   passwordConfirmInput.placeholder = 'Confirm Password';
   passwordConfirmInput.autocomplete = 'new-password';
-  passwordConfirmInput.className = 'input border-2 border-primary w-full mb-4';
+  passwordConfirmInput.className =
+    'input border-2 bg-card border-primary w-full mb-4';
 
   const submitBtn = document.createElement('button');
   submitBtn.type = 'submit';

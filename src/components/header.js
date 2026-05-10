@@ -4,6 +4,36 @@ import { logoutUser } from '../services/authService.js';
 import { fetchMyProfile } from '../services/profileService.js';
 import hamburgerMenu from './hamburgerMenu.js';
 
+/**
+ * Creates the main application header.
+ *
+ * Includes:
+ * - Logo and title
+ * - Search input with SPA navigation
+ * - Dark mode toggle
+ * - User profile (avatar, username, credits)
+ * - Hamburger menu (mobile)
+ *
+ * Behavior:
+ * - If user is logged in → shows profile + credits
+ * - If not logged in → shows guest state and login modal on interaction
+ * - Listens for:
+ *   - "credits:updated" → refresh user credits
+ *   - search input "Enter" → navigates to listings with query
+ *
+ * Side effects:
+ * - Reads auth state from localStorage
+ * - Fetches profile data for credits
+ * - Updates DOM dynamically
+ *
+ * @function Header
+ *
+ * @returns {HTMLElement} Fully constructed header element
+ *
+ * @example
+ * import Header from './components/header.js';
+ * document.getElementById('header').appendChild(Header());
+ */
 export default function Header() {
   const user = getAuthState();
   const base = import.meta.env.BASE_URL;
@@ -157,6 +187,25 @@ export default function Header() {
   return header;
 }
 
+/**
+ * Creates a navigation link element for the header.
+ *
+ * Supports:
+ * - Normal SPA navigation via data-link
+ * - Login → opens login modal instead of navigation
+ * - Logout → clears auth state and updates UI
+ *
+ * @function createNavLink
+ *
+ * @param {string} text - Link label displayed to the user
+ * @param {string} path - Route path (e.g. "/profile", "/login")
+ *
+ * @returns {HTMLAnchorElement} Configured anchor element
+ *
+ * @example
+ * const link = createNavLink('Profile', '/profile');
+ * nav.appendChild(link);
+ */
 function createNavLink(text, path) {
   const link = document.createElement('a');
   link.href = path;

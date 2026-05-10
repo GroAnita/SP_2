@@ -9,9 +9,8 @@ export default function ListingCard(listing, isFeatured = false) {
   const card = document.createElement('div');
 
   card.addEventListener('click', () => {
-    localStorage.setItem('selectedListing', JSON.stringify(listing));
     const base = import.meta.env.BASE_URL || '';
-    history.pushState({}, '', `${base}listing`);
+    history.pushState({}, '', `${base}listing?id=${listing.id}`);
     window.dispatchEvent(new PopStateEvent('popstate'));
   });
 

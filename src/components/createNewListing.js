@@ -2,6 +2,7 @@ import { createFormField } from '../utils/formFieldHelper.js';
 import renderTags from '../ui/renderTags.js';
 import showToast from '../ui/showToast.js';
 import { createListing } from '../services/createListingService.js';
+import optimizeImageUrl from '../utils/optimizeImageUrl.js';
 
 export default function CreateNewListing() {
   const modal = document.createElement('div');
@@ -21,7 +22,7 @@ export default function CreateNewListing() {
     'flex flex-col items-start justify-start w-full md:w-1/2 p-6 bg-card rounded-lg relative flex-1 mt-4';
 
   const modalTitle = document.createElement('h2');
-  modalTitle.className = 'text-2xl font-bold mb-4';
+  modalTitle.className = 'text-2xl text-text font-bold mb-4';
   modalTitle.textContent = 'Create New Listing';
 
   const form = document.createElement('form');
@@ -77,20 +78,20 @@ export default function CreateNewListing() {
   startDateInput.type = 'datetime-local';
   startDateInput.placeholder = 'Start Date';
   startDateInput.className =
-    'input w-full border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary';
+    'input text-gray-400 w-full border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary';
 
   const endDateInput = document.createElement('input');
   endDateInput.type = 'datetime-local';
   endDateInput.placeholder = 'End Date';
   endDateInput.className =
-    'input w-full border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary';
+    'input text-gray-400 w-full border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary';
 
   const images = [];
 
   const addImageButton = document.createElement('button');
   addImageButton.type = 'button';
   addImageButton.className =
-    'bg-primary text-text px-4 py-2 rounded-full border-2 border-text mt-2 hover:bg-secondary transition';
+    'bg-primary text-gray-800 px-4 py-2 rounded-full border-2 border-text mt-2 hover:bg-secondary transition';
   addImageButton.textContent = 'Add Image';
 
   const imageGrid = document.createElement('div');
@@ -104,11 +105,37 @@ export default function CreateNewListing() {
       return;
     }
     images.push(url);
+    const imageWrapper = document.createElement('div');
+    imageWrapper.className = 'relative';
+
     const img = document.createElement('img');
-    img.src = url;
+    img.src = optimizeImageUrl(url, 300);
+
     img.className = 'w-full aspect-square object-cover rounded';
-    imageGrid.appendChild(img);
-    imageUrlInput.value = '';
+
+    const removeBtn = document.createElement('button');
+
+    removeBtn.innerHTML = '&times;';
+
+    removeBtn.className =
+      'absolute top-1 right-1 bg-black/70 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-red-500 transition';
+
+    removeBtn.addEventListener('click', () => {
+      // remove image from array
+      const index = images.indexOf(url);
+
+      if (index > -1) {
+        images.splice(index, 1);
+      }
+
+      // remove from UI
+      imageWrapper.remove();
+    });
+
+    imageWrapper.appendChild(img);
+    imageWrapper.appendChild(removeBtn);
+
+    imageGrid.appendChild(imageWrapper);
   });
 
   const imageUrlInput = document.createElement('input');
@@ -119,7 +146,7 @@ export default function CreateNewListing() {
 
   const closeButton = document.createElement('button');
   closeButton.className =
-    'absolute top-2 right-2 text-gray-500 hover:text-gray-700';
+    'absolute text-2xl top-2 right-2 text-gray-500 hover:text-secondary';
   closeButton.innerHTML = '&times;';
   closeButton.addEventListener('click', () => {
     modal.remove();
@@ -134,7 +161,7 @@ export default function CreateNewListing() {
   const createButton = document.createElement('button');
   createButton.type = 'submit';
   createButton.className =
-    'bg-primary text-text px-4 py-2 border-2 border-text rounded-full hover:bg-primary-dark transition mt-4 hover:bg-secondary';
+    'bg-primary text-gray-800 px-4 py-2 border-2 border-text rounded-full hover:bg-primary-dark transition mt-4 hover:bg-secondary';
   createButton.textContent = 'Create Listing';
 
   const cancelButton = document.createElement('button');
@@ -146,7 +173,7 @@ export default function CreateNewListing() {
     modal.remove();
   });
   modalContent.appendChild(modalTitle);
-  imageContent.appendChild(closeButton);
+  modalContent.appendChild(closeButton);
   modalContent.appendChild(form);
   const titleObj = createFormField('Title', titleInput);
   form.appendChild(titleObj.wrapper);

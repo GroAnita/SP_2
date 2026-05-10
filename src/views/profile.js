@@ -8,6 +8,46 @@ import { updateProfile } from '../services/profileUpdateService.js';
 import showToast from '../ui/showToast.js';
 import Breadcrumbs from '../components/breadcrumbs.js';
 
+/**
+ * Renders the Profile page view.
+ *
+ * Features:
+ * - Displays user information (name, email, avatar, bio)
+ * - Allows editing:
+ *   - Avatar
+ *   - Bio
+ * - Displays tabs:
+ *   - "My Listings"
+ *   - "My Bids"
+ * - Supports SPA navigation via query param (?tab=bids | listings)
+ * - Uses caching to avoid unnecessary API calls
+ *
+ * Data sources:
+ * - Auth state (localStorage via getAuthState)
+ * - API:
+ *   - fetchOwnListings()
+ *   - fetchMyBidsListings()
+ *   - updateProfile()
+ *
+ * UI behavior:
+ * - Updates URL using history.pushState
+ * - Renders listings dynamically using card components
+ * - Handles "bid:placed" event to refresh bids in real-time
+ *
+ * Side effects:
+ * - Updates localStorage when profile changes
+ * - Dispatches and listens to custom events
+ *
+ * @async
+ * @function Profile
+ *
+ * @returns {Promise<HTMLElement>} Fully rendered profile page container
+ *
+ * @example
+ * import Profile from './views/profile.js';
+ * const view = await Profile();
+ * document.getElementById('app').appendChild(view);
+ */
 export default async function Profile() {
   const user = getAuthState();
   const params = new URLSearchParams(window.location.search);
@@ -142,6 +182,14 @@ export default async function Profile() {
   const hr = document.createElement('hr');
   hr.className = 'my-4 border-text';
 
+  /**
+   * Toggles active state between two buttons.
+   *
+   * @param {HTMLButtonElement} activeBtn - Button to activate
+   * @param {HTMLButtonElement} inactiveBtn - Button to deactivate
+   *
+   * @returns {void}
+   */
   function setActiveButton(activeBtn, inactiveBtn) {
     activeBtn.classList.add('bg-primary');
     activeBtn.classList.remove('bg-secondary');
@@ -190,6 +238,16 @@ export default async function Profile() {
     renderListings(cachedListings, OwnListingCard);
   });
 
+  /**
+   * Renders a list of listings into the profile section.
+   *
+   * Applies fade-out/fade-in animation during updates.
+   *
+   * @param {Array<Object>} listings - Array of listing objects
+   * @param {Function} cardComponent - Function that returns a DOM card element
+   *
+   * @returns {void}
+   */
   function renderListings(listings, cardComponent) {
     // fade out
     ownListingSection.classList.add('opacity-0');
@@ -239,10 +297,7 @@ export default async function Profile() {
       setActiveButton(myBidsButton, ownListingButton);
 
       const listings = await fetchMyBidsListings();
-      renderListings(
-        listings.map((bid) => bid.listing),
-        myBidsCard
-      );
+      renderListings(listings, myBidsCard);
     } else {
       // default = listings
       setActiveButton(ownListingButton, myBidsButton);
@@ -255,6 +310,13 @@ export default async function Profile() {
       'Error loading data. Please try again later.';
   }
 
+  /**
+   * Handles "bid:placed" event.
+   *
+   * Refreshes bids only if the current tab is "bids".
+   *
+   * @returns {void}
+   */
   function handleBidPlaced() {
     const params = new URLSearchParams(window.location.search);
     const currentTab = params.get('tab');
@@ -262,6 +324,14 @@ export default async function Profile() {
     refreshMyBids();
   }
 
+  /**
+   * Fetches and re-renders the user's bid listings.
+   *
+   * Updates cached bids and UI.
+   *
+   * @async
+   * @returns {Promise<void>}
+   */
   async function refreshMyBids() {
     try {
       cachedBids = await fetchMyBidsListings();

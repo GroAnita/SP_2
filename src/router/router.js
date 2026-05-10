@@ -29,18 +29,7 @@ const routes = {
    *
    * @returns {HTMLElement}
    */
-  '/listing': {
-    view: () => {
-      const raw = localStorage.getItem('selectedListing');
-      const data = raw ? JSON.parse(raw) : null;
-      if (!data) {
-        showToast('No listing selected. Redirecting to home.', 'warning');
-        navigate('/');
-        return document.createElement('div');
-      }
-      return ListingDetail(data);
-    },
-  },
+  '/listing': { view: ListingDetail, title: 'Listing Detail' },
   '/register': { view: Register, title: 'Register' },
   '/profile': { view: Profile, protected: true, title: 'Profile' },
 };
