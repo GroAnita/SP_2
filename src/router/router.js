@@ -6,6 +6,7 @@ import Profile from '../views/profile.js';
 import { getAuthState } from '../state/authState.js';
 import navigate from '../utils/navigate.js';
 import showToast from '../ui/showToast.js';
+import Loader from '../components/loader.js';
 
 /**
  * Route configuration object.
@@ -87,14 +88,18 @@ export default function router() {
     return;
   }
 
-  const page = route.view();
-
-  // Clear
+  // Clear immediately
   app.innerHTML = '';
   headerContainer.innerHTML = '';
 
-  //  Render header
+  // Render header immediately
   headerContainer.appendChild(Header());
+
+  // Show loading state immediately
+  app.appendChild(Loader());
+
+  // THEN load page
+  const page = route.view();
 
   /**
    * Handles both synchronous and asynchronous views.

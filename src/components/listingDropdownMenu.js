@@ -11,6 +11,9 @@ export default function listingDropdownMenu({
 
   const button = document.createElement('button');
   button.textContent = '⋯';
+  button.setAttribute('aria-label', `Open actions menu for ${listing.title}`);
+  button.setAttribute('aria-expanded', 'false');
+  button.type = 'button';
 
   button.className = 'text-text px-2 py-1 text-lg';
 
@@ -21,12 +24,16 @@ export default function listingDropdownMenu({
 
   const edit = document.createElement('button');
   edit.textContent = 'Edit';
+  edit.type = 'button';
+  edit.setAttribute('role', 'menuitem');
 
   edit.className =
     'px-4 py-2 hover:bg-primary hover:text-gray-500 rounded-md text-text text-left transition-colors';
 
   const del = document.createElement('button');
   del.textContent = 'Delete';
+  del.type = 'button';
+  del.setAttribute('role', 'menuitem');
 
   del.className =
     'px-4 py-2 hover:bg-red-500 text-text rounded-md hover:text-white text-left transition-colors';
@@ -55,6 +62,8 @@ export default function listingDropdownMenu({
   button.addEventListener('click', (e) => {
     e.stopPropagation();
     menu.classList.toggle('hidden');
+    const isOpen = !menu.classList.contains('hidden');
+    button.setAttribute('aria-expanded', isOpen);
   });
 
   // prevent close
@@ -77,6 +86,13 @@ export default function listingDropdownMenu({
   del.addEventListener('click', () => {
     menu.classList.add('hidden');
     onDelete?.();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      menu.classList.add('hidden');
+      button.setAttribute('aria-expanded', 'false');
+    }
   });
 
   return wrapper;

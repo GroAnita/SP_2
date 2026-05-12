@@ -3,17 +3,22 @@ import renderTags from '../ui/renderTags.js';
 import showToast from '../ui/showToast.js';
 import { createListing } from '../services/createListingService.js';
 import optimizeImageUrl from '../utils/optimizeImageUrl.js';
+import { closeModal, setupEscapeClose } from '../utils/modalUtils.js';
+import { createInputField } from '../utils/createInputWithIcon.js';
 
 export default function CreateNewListing() {
   const modal = document.createElement('div');
   modal.className =
     'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 w-full overflow-y-auto';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-labelledby', 'create-listing-title');
 
   const contentWrapper = document.createElement('div');
   contentWrapper.className =
     'flex flex-col md:flex-row items-start justify-center w-full max-w-4xl p-6 bg-card rounded-lg max-h-[90vh] overflow-y-auto ';
 
-  const modalContent = document.createElement('div');
+  const modalContent = document.createElement('section');
   modalContent.className =
     'bg-card rounded-lg p-6 w-full md:w-1/2 flex-1 relative';
 
@@ -24,31 +29,55 @@ export default function CreateNewListing() {
   const modalTitle = document.createElement('h2');
   modalTitle.className = 'text-2xl text-text font-bold mb-4';
   modalTitle.textContent = 'Create New Listing';
+  modalTitle.id = 'create-listing-title';
 
   const form = document.createElement('form');
   form.className = 'flex flex-col gap-4';
 
-  const titleInput = document.createElement('input');
-  titleInput.type = 'text';
-  titleInput.placeholder = 'Listing Title';
-  titleInput.className =
-    'input w-full border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary';
+  const titleField = createInputField({
+    id: 'listing-title',
+    name: 'listing-title',
+    label: 'Title',
+    placeholder: 'Listing Title',
+  });
 
-  const descriptionInput = document.createElement('textarea');
-  descriptionInput.placeholder = 'Listing Description';
-  descriptionInput.className =
-    'input w-full border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary';
+  const titleObj = createFormField('Title', titleField);
+  const titleInput = titleObj.input;
+
+  form.appendChild(titleObj.wrapper);
+
+  const descriptionField = createInputField({
+    type: 'textarea',
+    id: 'listing-description',
+    name: 'listing-description',
+    label: 'Description',
+    placeholder: 'Listing Description',
+  });
+
+  const descriptionObj = createFormField('Description', descriptionField);
+  form.appendChild(descriptionObj.wrapper);
+  const descriptionInput = descriptionObj.input;
 
   const tags = [];
+
+  const tagsSection = document.createElement('div');
+
+  const tagsLabel = document.createElement('label');
+  tagsLabel.textContent = 'Tags';
+  tagsSection.className = 'flex flex-col gap-1';
 
   const tagsWrapper = document.createElement('div');
   tagsWrapper.className =
     'flex flex-wrap gap-2 p-2 border rounded bg-card border-gray-300 focus-within:ring-2 focus-within:ring-primary';
 
+  tagsSection.appendChild(tagsLabel);
+  tagsSection.appendChild(tagsWrapper);
+  form.appendChild(tagsSection);
   const tagsInput = document.createElement('input');
   tagsInput.placeholder = 'Add tags...';
   tagsInput.className = 'flex-1 outline-none bg-transparent';
-
+  tagsInput.id = 'listing-tags';
+  tagsInput.setAttribute('aria-label', 'Add tags');
   tagsWrapper.appendChild(tagsInput);
 
   tagsInput.addEventListener('keydown', (e) => {
@@ -68,23 +97,41 @@ export default function CreateNewListing() {
       tagsInput.value = '';
     }
   });
-  const priceInput = document.createElement('input');
-  priceInput.type = 'number';
-  priceInput.placeholder = 'Starting Price';
-  priceInput.className =
-    'input w-full border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary';
 
-  const startDateInput = document.createElement('input');
-  startDateInput.type = 'datetime-local';
-  startDateInput.placeholder = 'Start Date';
-  startDateInput.className =
-    'input text-gray-400 w-full border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary';
+  const priceField = createInputField({
+    id: 'listing-price',
+    name: 'listing-price',
+    label: 'Starting Price',
+    placeholder: 'Starting Price',
+  });
 
-  const endDateInput = document.createElement('input');
-  endDateInput.type = 'datetime-local';
-  endDateInput.placeholder = 'End Date';
-  endDateInput.className =
-    'input text-gray-400 w-full border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary';
+  const priceObj = createFormField('Starting Price', priceField);
+  form.appendChild(priceObj.wrapper);
+  const priceInput = priceObj.input;
+
+  const startDateField = createInputField({
+    type: 'datetime-local',
+    id: 'listing-start-date',
+    name: 'listing-start-date',
+    label: 'Start Date',
+    placeholder: 'Start Date',
+  });
+
+  const startDateObj = createFormField('Start Date', startDateField);
+  form.appendChild(startDateObj.wrapper);
+  const startDateInput = startDateObj.input;
+
+  const endDateField = createInputField({
+    type: 'datetime-local',
+    id: 'listing-end-date',
+    name: 'listing-end-date',
+    label: 'End Date',
+    placeholder: 'End Date',
+  });
+
+  const endDateObj = createFormField('End Date', endDateField);
+  form.appendChild(endDateObj.wrapper);
+  const endDateInput = endDateObj.input;
 
   const images = [];
 
@@ -101,7 +148,7 @@ export default function CreateNewListing() {
     const url = imageUrlInput.value.trim();
     if (!url) return;
     if (images.length >= 8) {
-      alert('You can only add up to 8 images.');
+      showToast('You can only add up to 8 images.', 'warning');
       return;
     }
     images.push(url);
@@ -110,13 +157,14 @@ export default function CreateNewListing() {
 
     const img = document.createElement('img');
     img.src = optimizeImageUrl(url, 300);
+    img.alt = 'Listing preview Image';
 
     img.className = 'w-full aspect-square object-cover rounded';
 
     const removeBtn = document.createElement('button');
-
+    removeBtn.type = 'button';
+    removeBtn.setAttribute('aria-label', 'Remove image');
     removeBtn.innerHTML = '&times;';
-
     removeBtn.className =
       'absolute top-1 right-1 bg-black/70 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-red-500 transition';
 
@@ -138,18 +186,24 @@ export default function CreateNewListing() {
     imageGrid.appendChild(imageWrapper);
   });
 
-  const imageUrlInput = document.createElement('input');
-  imageUrlInput.type = 'text';
-  imageUrlInput.placeholder = 'Image URL';
-  imageUrlInput.className =
-    'input w-full border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary';
+  const imageUrlField = createInputField({
+    id: 'listing-image-url',
+    name: 'image-url',
+    placeholder: 'Image URL',
+  });
+
+  const imageUrlObj = createFormField('Image URL', imageUrlField);
+
+  const imageUrlInput = imageUrlObj.input;
 
   const closeButton = document.createElement('button');
   closeButton.className =
     'absolute text-2xl top-2 right-2 text-gray-500 hover:text-secondary';
+  closeButton.setAttribute('aria-label', 'Close create listing form');
+  closeButton.type = 'button';
   closeButton.innerHTML = '&times;';
   closeButton.addEventListener('click', () => {
-    modal.remove();
+    closeModal(modal);
   });
 
   const createButtonWrapper = document.createElement('div');
@@ -170,30 +224,11 @@ export default function CreateNewListing() {
     'bg-gray-500 text-white px-4 py-2 rounded-full hover:bg-gray-600 transition mt-4 mr-2';
   cancelButton.textContent = 'Cancel';
   cancelButton.addEventListener('click', () => {
-    modal.remove();
+    closeModal(modal);
   });
   modalContent.appendChild(modalTitle);
   modalContent.appendChild(closeButton);
-  modalContent.appendChild(form);
-  const titleObj = createFormField('Title', titleInput);
-  form.appendChild(titleObj.wrapper);
 
-  const descriptionObj = createFormField('Description', descriptionInput);
-  form.appendChild(descriptionObj.wrapper);
-
-  const tagsObj = createFormField('Tags', tagsWrapper);
-  form.appendChild(tagsObj.wrapper);
-
-  const priceObj = createFormField('Starting Price', priceInput);
-  form.appendChild(priceObj.wrapper);
-
-  const startDateObj = createFormField('Start Date', startDateInput);
-  form.appendChild(startDateObj.wrapper);
-
-  const endDateObj = createFormField('End Date', endDateInput);
-  form.appendChild(endDateObj.wrapper);
-
-  const imageUrlObj = createFormField('Image URL', imageUrlInput);
   imageContent.appendChild(imageUrlObj.wrapper);
   createButtonWrapper.appendChild(addImageButton);
   form.appendChild(imageContent);
@@ -211,6 +246,10 @@ export default function CreateNewListing() {
 
   document.body.appendChild(modal);
 
+  requestAnimationFrame(() => {
+    titleInput.focus();
+  });
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -225,7 +264,7 @@ export default function CreateNewListing() {
       }
     }
 
-    if (!title || isNaN(endDate.getTime())) {
+    if (!title || !endsAt) {
       showToast('Title and end date are required');
       return;
     }
@@ -239,12 +278,18 @@ export default function CreateNewListing() {
         endsAt,
       });
       showToast('Listing created successfully');
-      modal.remove();
+      closeModal(modal);
       document.dispatchEvent(
         new CustomEvent('listing:created', { detail: newListing })
       );
     } catch (error) {
       showToast(error.message || 'Failed to create listing');
+    }
+  });
+  setupEscapeClose(modal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal(modal);
     }
   });
 }

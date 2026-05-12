@@ -12,9 +12,13 @@ import { registerUser } from '../services/authService.js';
 import showToast from '../ui/showToast.js';
 import { loginUser } from '../services/authService.js';
 import navigate from '../utils/navigate.js';
+import {
+  createInputField,
+  createPasswordInputWithIcon,
+} from '../utils/createInputWithIcon.js';
 
 export default function RegisterUserForm() {
-  const container = document.createElement('div');
+  const container = document.createElement('main');
   container.className =
     'container flex flex-col md:flex-row w-full md:w-2/3 mx-auto';
 
@@ -32,52 +36,71 @@ export default function RegisterUserForm() {
   form.className = 'bg-primary text-text p-4 rounded-lg';
   form.autocomplete = 'on';
 
-  const userNameInput = document.createElement('input');
-  userNameInput.type = 'text';
-  userNameInput.name = 'username';
-  userNameInput.placeholder = 'Username';
-  userNameInput.className =
-    'input border-2 border-yellow-300 w-full mb-4 bg-card active:bg-secondary';
-  userNameInput.autocomplete = 'username';
+  const usernameFieldInput = validationFields(
+    createInputField({
+      id: 'username',
+      name: 'username',
+      label: 'Username',
+      placeholder: 'Username',
+      autocomplete: 'username',
+    })
+  );
 
-  const addressInput = document.createElement('input');
-  addressInput.type = 'text';
-  addressInput.name = 'address';
-  addressInput.placeholder = 'Address';
-  addressInput.className =
-    'input border-2 border-primary w-full mb-4 bg-card active:bg-secondary';
-  addressInput.autocomplete = 'street-address';
+  const addressFieldInput = validationFields(
+    createInputField({
+      id: 'address',
+      name: 'address',
+      label: 'Address',
+      placeholder: 'Address',
+      autocomplete: 'street-address',
+    })
+  );
 
-  const phoneInput = document.createElement('input');
-  phoneInput.type = 'tel';
-  phoneInput.name = 'phone';
-  phoneInput.placeholder = 'Phone Number';
-  phoneInput.className =
-    'input border-2 border-primary w-full mb-4 bg-card active:bg-secondary';
-  phoneInput.autocomplete = 'tel';
+  const phoneFieldInput = validationFields(
+    createInputField({
+      id: 'phone',
+      name: 'phone',
+      label: 'Phone Number',
+      placeholder: 'Phone Number',
+      autocomplete: 'tel',
+    })
+  );
 
-  const emailInput = document.createElement('input');
-  emailInput.type = 'email';
-  emailInput.name = 'email';
-  emailInput.placeholder = 'Email';
-  emailInput.className =
-    'input border-2 border-primary w-full mb-4 bg-card active:bg-secondary';
-  emailInput.autocomplete = 'email';
+  const emailFieldInput = validationFields(
+    createInputField({
+      id: 'email',
+      name: 'email',
+      label: 'Email',
+      placeholder: 'Email',
+      autocomplete: 'email',
+    })
+  );
 
-  const passwordInput = document.createElement('input');
-  passwordInput.type = 'password';
-  passwordInput.name = 'password';
-  passwordInput.placeholder = 'Password';
-  passwordInput.autocomplete = 'new-password';
-  passwordInput.className = 'input border-2 border-primary bg-card w-full mb-4';
+  const passwordFieldInput = validationFields(
+    createPasswordInputWithIcon({
+      id: 'password',
+      name: 'password',
+      label: 'Password',
+      placeholder: 'Password',
+      type: 'password',
+    })
+  );
 
-  const passwordConfirmInput = document.createElement('input');
-  passwordConfirmInput.type = 'password';
-  passwordConfirmInput.name = 'passwordConfirm';
-  passwordConfirmInput.placeholder = 'Confirm Password';
-  passwordConfirmInput.autocomplete = 'new-password';
-  passwordConfirmInput.className =
-    'input border-2 bg-card border-primary w-full mb-4';
+  const passwordConfirmFieldInput = validationFields(
+    createPasswordInputWithIcon({
+      id: 'password-confirm',
+      name: 'password-confirm',
+      label: 'Confirm Password',
+      placeholder: 'Confirm Password',
+      type: 'password',
+    })
+  );
+  const userNameInput = usernameFieldInput.input;
+  const addressInput = addressFieldInput.input;
+  const phoneInput = phoneFieldInput.input;
+  const emailInput = emailFieldInput.input;
+  const passwordInput = passwordFieldInput.input;
+  const passwordConfirmInput = passwordConfirmFieldInput.input;
 
   const submitBtn = document.createElement('button');
   submitBtn.type = 'submit';
@@ -119,18 +142,13 @@ export default function RegisterUserForm() {
   infoImg.className = 'w-56 h-auto mx-auto mt-4';
 
   form.appendChild(title);
-  const usernameField = validationFields(userNameInput);
-  form.appendChild(usernameField.wrapper);
-  const addressField = validationFields(addressInput);
-  form.appendChild(addressField.wrapper);
-  const phoneField = validationFields(phoneInput);
-  form.appendChild(phoneField.wrapper);
-  const emailField = validationFields(emailInput);
-  form.appendChild(emailField.wrapper);
-  const passwordField = validationFields(passwordInput);
-  form.appendChild(passwordField.wrapper);
-  const passwordConfirmField = validationFields(passwordConfirmInput);
-  form.appendChild(passwordConfirmField.wrapper);
+
+  form.appendChild(usernameFieldInput.wrapper);
+  form.appendChild(addressFieldInput.wrapper);
+  form.appendChild(phoneFieldInput.wrapper);
+  form.appendChild(emailFieldInput.wrapper);
+  form.appendChild(passwordFieldInput.wrapper);
+  form.appendChild(passwordConfirmFieldInput.wrapper);
 
   form.appendChild(submitBtn);
   formContainer.appendChild(form);
@@ -212,8 +230,8 @@ export default function RegisterUserForm() {
     const isValid = isValidUsername(userNameInput.value);
     updateFieldState(
       userNameInput,
-      usernameField.icon,
-      usernameField.error,
+      usernameFieldInput.icon,
+      usernameFieldInput.error,
       isValid,
       'Username must be 3-20 characters and can only contain letters, numbers, underscores, or hyphens.'
     );
@@ -223,8 +241,8 @@ export default function RegisterUserForm() {
     const isValid = isValidEmail(emailInput.value);
     updateFieldState(
       emailInput,
-      emailField.icon,
-      emailField.error,
+      emailFieldInput.icon,
+      emailFieldInput.error,
       isValid,
       'Please enter a valid email address ending with @stud.noroff.no.'
     );
@@ -234,8 +252,8 @@ export default function RegisterUserForm() {
     const isValid = isValidAddress(addressInput.value);
     updateFieldState(
       addressInput,
-      addressField.icon,
-      addressField.error,
+      addressFieldInput.icon,
+      addressFieldInput.error,
       isValid,
       'Please enter a valid address.'
     );
@@ -245,8 +263,8 @@ export default function RegisterUserForm() {
     const isValid = isValidPhone(phoneInput.value);
     updateFieldState(
       phoneInput,
-      phoneField.icon,
-      phoneField.error,
+      phoneFieldInput.icon,
+      phoneFieldInput.error,
       isValid,
       'Please enter a valid phone number.'
     );
@@ -256,8 +274,8 @@ export default function RegisterUserForm() {
     const isValid = isValidPassword(passwordInput.value);
     updateFieldState(
       passwordInput,
-      passwordField.icon,
-      passwordField.error,
+      passwordFieldInput.icon,
+      passwordFieldInput.error,
       isValid,
       'Password must be at least 8 characters long and include uppercase letters, lowercase letters, numbers, and special characters.'
     );
@@ -269,8 +287,8 @@ export default function RegisterUserForm() {
       isValidPassword(passwordConfirmInput.value);
     updateFieldState(
       passwordConfirmInput,
-      passwordConfirmField.icon,
-      passwordConfirmField.error,
+      passwordConfirmFieldInput.icon,
+      passwordConfirmFieldInput.error,
       isValid,
       'Passwords do not match or do not meet the requirements.'
     );

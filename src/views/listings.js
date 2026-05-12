@@ -42,8 +42,9 @@ export default async function Listings() {
   let currentListings = [];
   const id = params.get('id');
 
-  const container = document.createElement('div');
+  const container = document.createElement('main');
   container.className = 'container w-2/3 mx-auto p-4  ';
+  container.setAttribute('aria-labelledby', 'listings-heading');
 
   const breadcrumbs = Breadcrumbs([
     { label: 'Home', path: '/' },
@@ -54,9 +55,15 @@ export default async function Listings() {
   const title = document.createElement('h1');
   title.className = 'text-3xl text-text font-poppins font-bold mb-4';
   title.textContent = 'Listings';
+  title.id = 'listings-heading';
 
   const filterContainer = document.createElement('section');
   filterContainer.className = 'flex justify-end mb-4 gap-4';
+
+  const filterLabel = document.createElement('label');
+  filterLabel.htmlFor = 'listing-sort';
+  filterLabel.className = 'sr-only';
+  filterLabel.textContent = 'Sort listings:';
 
   const filterSelect = document.createElement('select');
   filterSelect.className =
@@ -67,6 +74,8 @@ export default async function Listings() {
     <option value="ending-soon">Ending Soon</option>
     <option value="active">Active First</option>
   `;
+  filterSelect.id = 'listing-sort';
+
   filterSelect.addEventListener('change', () => {
     const sorted = sortListings([...currentListings], filterSelect.value);
 
@@ -78,6 +87,7 @@ export default async function Listings() {
     });
   });
 
+  filterContainer.appendChild(filterLabel);
   filterContainer.appendChild(filterSelect);
   container.appendChild(filterContainer);
 
@@ -85,8 +95,10 @@ export default async function Listings() {
   listingGrid.className =
     'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-8 auto-rows-[300px] h-full relative mx-auto';
 
+  listingGrid.setAttribute('aria-busy', 'true');
   listingGrid.innerHTML = '';
   listingGrid.appendChild(Loader('lg'));
+  listingGrid.setAttribute('aria-busy', 'false');
 
   const pagination = document.createElement('div');
   pagination.className = 'flex justify-center mt-6 gap-4';
@@ -95,6 +107,7 @@ export default async function Listings() {
   prevButton.className =
     'px-4 py-2 bg-primary text-text rounded-full disabled:opacity-40 disabled:cursor-not-allowed';
   prevButton.textContent = 'Previous';
+  prevButton.setAttribute('aria-label', 'Go to previous page');
 
   const pageIndicator = document.createElement('span');
   pageIndicator.className = 'text-text self-center font-medium';
@@ -103,6 +116,7 @@ export default async function Listings() {
   nextButton.className =
     'px-4 py-2 bg-primary text-text rounded-full disabled:opacity-40 disabled:cursor-not-allowed';
   nextButton.textContent = 'Next';
+  nextButton.setAttribute('aria-label', 'Go to next page');
 
   container.appendChild(title);
   container.appendChild(listingGrid);
@@ -215,9 +229,9 @@ export default async function Listings() {
 
       listings = sortListings(listings, filterSelect.value);
 
-      // 🚫 EMPTY
       if (!listings.length && page === 1) {
-        listingGrid.innerHTML = '<p>No listings found.</p>';
+        listingGrid.innerHTML =
+          '<p role="status" class="text-text"> No listings found.</p>';
         return;
       }
 
@@ -235,7 +249,8 @@ export default async function Listings() {
       pageIndicator.textContent = `Page ${page}`;
     } catch (error) {
       console.error(error);
-      listingGrid.innerHTML = '<p>Error loading listings.</p>';
+      listingGrid.innerHTML =
+        '<p role="alert" class="text-text"> Error loading listings.</p>';
     } finally {
       isLoading = false;
     }

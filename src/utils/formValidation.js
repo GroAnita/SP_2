@@ -55,26 +55,21 @@ export function validateRegisterForm(data) {
   return { valid: true };
 }
 
-export function validationFields(input) {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'relative w-full mb-2 flex flex-col';
+export function validationFields(field) {
+  const { wrapper, input } = field;
 
-  const inputWrapper = document.createElement('div');
-  inputWrapper.className = 'relative w-full';
-
+  wrapper.classList.add('flex', 'flex-col');
   const icon = document.createElement('span');
   icon.className =
-    'absolute right-3 top-1/2 transform -translate-y-1/2 text-xl pointer-events-none';
+    'absolute right-2 top-1/3 transform -translate-y-1/2 text-xl pointer-events-none';
 
   const error = document.createElement('p');
   error.className = 'text-red-500 text-sm mt-1 hidden';
 
-  inputWrapper.appendChild(input);
-  inputWrapper.appendChild(icon);
-  wrapper.appendChild(inputWrapper);
+  wrapper.appendChild(icon);
   wrapper.appendChild(error);
 
-  return { wrapper, icon, error };
+  return { wrapper, input, icon, error };
 }
 
 export function updateFieldState(input, icon, errorEl, isValid, message = '') {

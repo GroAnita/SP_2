@@ -3,14 +3,19 @@ import { logoutUser } from '../services/authService.js';
 import { fetchMyProfile } from '../services/profileService.js';
 import logInModal from './logInModal';
 import showToast from '../ui/showToast.js';
+import navigate from '../utils/navigate.js';
+import { closeModal, setupEscapeClose } from '../utils/modalUtils.js';
 
 export default function hamburgerMenu() {
   const user = getAuthState();
   const modal = document.createElement('div');
   modal.className =
     'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-end z-50';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-label', 'Navigation menu');
 
-  const container = document.createElement('div');
+  const container = document.createElement('aside');
   container.className =
     'relative h-full w-full md:w-80 bg-card text-text p-6 shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out';
 
@@ -18,8 +23,10 @@ export default function hamburgerMenu() {
   closeButton.className =
     'absolute top-2 right-2 text- text-4xl hover:text-secondary dark:hover:text-gray-300';
   closeButton.innerHTML = '&times;';
+  closeButton.type = 'button';
+  closeButton.setAttribute('aria-label', 'Close navigation menu');
   closeButton.addEventListener('click', () => {
-    document.body.removeChild(modal);
+    closeModal(modal, container);
   });
 
   const userSection = document.createElement('div');
@@ -45,6 +52,8 @@ export default function hamburgerMenu() {
   const logOutButton = document.createElement('button');
   logOutButton.className =
     'fa-solid fa-right-from-bracket mt-1 text-2xl text-text px-3 py-1 rounded  transition';
+  logOutButton.setAttribute('aria-label', 'Log out');
+  logOutButton.type = 'button';
   logOutButton.addEventListener('click', () => {
     logoutUser();
 
@@ -79,6 +88,10 @@ export default function hamburgerMenu() {
     'My Profile',
     '+ Create Listing',
   ];
+
+  const nav = document.createElement('nav');
+  nav.setAttribute('aria-label', 'Primary navigation');
+
   const menuList = document.createElement('ul');
   menuList.className = 'flex flex-col gap-4';
 
@@ -121,8 +134,7 @@ export default function hamburgerMenu() {
 
       setTimeout(() => {
         modal.remove();
-        history.pushState({}, '', route);
-        window.dispatchEvent(new PopStateEvent('popstate'));
+        navigate(route);
       }, 300);
     });
 
@@ -146,6 +158,8 @@ export default function hamburgerMenu() {
     logInButton.textContent = 'Log In';
     logInButton.className =
       'text-text px-3 py-1 rounded hover:text-primary transition';
+    logInButton.type = 'button';
+    logInButton.setAttribute('aria-label', 'Log in to your account');
 
     logInButton.addEventListener('click', () => {
       modal.remove();
@@ -155,10 +169,16 @@ export default function hamburgerMenu() {
     actionBtnSection.appendChild(logInButton);
   }
 
+  const searchLabel = document.createElement('label');
+  searchLabel.textContent = 'Search Listings';
+  searchLabel.className = 'sr-only';
+  searchLabel.htmlFor = 'mobile-search';
+
   const searchInputMobile = document.createElement('input');
   searchInputMobile.type = 'text';
   searchInputMobile.placeholder = 'Search...';
   searchInputMobile.className = 'input block md:hidden w-full mt-4';
+  searchInputMobile.id = 'mobile-search';
 
   searchInputMobile.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
@@ -178,12 +198,11 @@ export default function hamburgerMenu() {
 
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
-      container.classList.add('translate-x-full');
-      setTimeout(() => {
-        modal.remove();
-      }, 300);
+      closeModal(modal, container);
     }
   });
+
+  setupEscapeClose(modal, container);
 
   // BUILD MODAL
   container.appendChild(closeButton);
@@ -192,7 +211,9 @@ export default function hamburgerMenu() {
   userInfo.appendChild(userName);
   userInfo.appendChild(userEmail);
   container.appendChild(actionBtnSection);
-  container.appendChild(menuList);
+  nav.appendChild(menuList);
+  container.appendChild(nav);
+  container.appendChild(searchLabel);
   container.appendChild(searchInputMobile);
 
   modal.appendChild(container);

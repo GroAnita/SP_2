@@ -55,8 +55,9 @@ export default async function Profile() {
   let cachedListings = null;
   let cachedBids = null;
 
-  const container = document.createElement('div');
+  const container = document.createElement('main');
   container.className = 'w-full mx-auto p-4';
+  container.setAttribute('aria-labelledby', 'profile-heading');
 
   const breadcrumbs = Breadcrumbs([
     { label: 'Home', path: '/' },
@@ -65,9 +66,24 @@ export default async function Profile() {
 
   container.appendChild(breadcrumbs);
 
+  const pageTitle = document.createElement('h1');
+  pageTitle.className = 'text-3xl text-text font-poppins font-bold mb-4';
+  pageTitle.textContent = 'My Profile';
+  pageTitle.id = 'profile-heading';
+
+  container.appendChild(pageTitle);
+
   const profileInfoContainer = document.createElement('section');
   profileInfoContainer.className +=
     'flex flex-col relative overflow-hidden md:flex-row p-6 rounded-xl items-center justify-center gap-6 bg-gradient-to-r from-yellow-200 via-yellow-100 to-yellow-300 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 border-2 mx-auto shadow-[0_0_30px_rgba(255,230,0,0.4)] border-yellow-300/40';
+  profileInfoContainer.setAttribute('aria-labelledby', 'profile-info-heading');
+
+  const profileInfoHeading = document.createElement('h2');
+  profileInfoHeading.id = 'profile-info-heading';
+  profileInfoHeading.className = 'sr-only';
+  profileInfoHeading.textContent = 'Profile Information';
+
+  profileInfoContainer.appendChild(profileInfoHeading);
 
   const pattern = document.createElement('div');
   pattern.className =
@@ -90,6 +106,7 @@ export default async function Profile() {
   editAvatarBtn.className =
     'absolute bottom-0 right-0 bg-primary text-text dark:text-card p-2 rounded-full opacity-80 hover:opacity-100 transition-opacity';
   editAvatarBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+  editAvatarBtn.setAttribute('aria-label', 'Edit Profile Avatar');
 
   editAvatarBtn.addEventListener('click', () => {
     const newAvatarUrl = prompt('Enter new avatar URL:');
@@ -134,11 +151,13 @@ export default async function Profile() {
   editBioBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
   editBioBtn.className =
     'absolute top-0 right-0 bg-primary text-text dark:text-card p-2 rounded-full opacity-80 hover:opacity-100 transition-opacity';
+  editBioBtn.setAttribute('aria-label', 'Edit Profile Bio');
 
   editBioBtn.addEventListener('click', () => {
     const textarea = document.createElement('textarea');
     textarea.value = bioText.textContent;
     textarea.className = 'input w-full';
+    textarea.setAttribute('aria-label', 'Edit your bio');
 
     const saveBtn = document.createElement('button');
     saveBtn.textContent = 'Save';
@@ -191,6 +210,8 @@ export default async function Profile() {
    * @returns {void}
    */
   function setActiveButton(activeBtn, inactiveBtn) {
+    activeBtn.setAttribute('aria-pressed', 'true');
+    inactiveBtn.setAttribute('aria-pressed', 'false');
     activeBtn.classList.add('bg-primary');
     activeBtn.classList.remove('bg-secondary');
     inactiveBtn.classList.add('bg-secondary');
@@ -256,7 +277,8 @@ export default async function Profile() {
       ownListingSection.innerHTML = '';
 
       if (listings.length === 0) {
-        ownListingSection.textContent = 'No listings found.';
+        ownListingSection.textContent =
+          '<p role="status">No listings found.</p>';
       } else {
         listings.forEach((listing) => {
           if (!listing || !listing.title) {
@@ -307,7 +329,7 @@ export default async function Profile() {
     }
   } catch (error) {
     ownListingSection.textContent =
-      'Error loading data. Please try again later.';
+      '<p role="alert">Error loading data. Please try again later.</p>';
   }
 
   /**

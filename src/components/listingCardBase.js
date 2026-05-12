@@ -11,18 +11,27 @@ export default function listingCardBase(listing, options = {}) {
   card.className =
     'bg-card border-2 h-full border-text rounded-lg p-4 flex flex-col gap-4 relative group';
 
+  if (titleLink) {
+    card.href = titleLink;
+    card.dataset.link = '';
+  }
+
   const header = document.createElement('div');
   header.className = 'flex items-center justify-between';
 
-  const title = document.createElement(titleLink ? 'a' : 'h2');
+  const titleWrapper = document.createElement('h2');
+
+  const title = titleLink
+    ? document.createElement('a')
+    : document.createElement('span');
   title.className =
     'text-xl text-text hover:text-secondary transition-colors font-semibold';
   title.textContent = listing.title;
+  title.href = titleLink;
+  title.dataset.link = '';
 
-  if (titleLink) {
-    title.href = titleLink;
-    title.setAttribute('data-link', '');
-  }
+  titleWrapper.appendChild(title);
+  header.appendChild(titleWrapper);
 
   const now = new Date();
   const isActive = new Date(listing.endsAt) > now;

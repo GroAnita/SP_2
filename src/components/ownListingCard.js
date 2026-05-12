@@ -90,7 +90,7 @@ export default function OwnListingCard(listing) {
 
   return listingCardBase(listing, {
     headerRight: dropdown,
-    titleLink: `/listing.html?id=${listing.id}`,
+    titleLink: `/listing?id=${listing.id}`,
     extraContent,
   });
 }

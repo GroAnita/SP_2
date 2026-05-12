@@ -100,8 +100,17 @@ export default function editOwnListing(listing = null, options = {}) {
     placeholder: 'Starting Price',
   });
 
-  const tagsObj = createFormField('Tags', tagsWrapper);
-  form.appendChild(tagsObj.wrapper);
+  const tagsContainer = document.createElement('div');
+  tagsContainer.className = 'flex flex-col gap-1 w-full';
+
+  const tagsLabel = document.createElement('label');
+  tagsLabel.textContent = 'Tags';
+  tagsLabel.className = 'text-sm font-medium text-text';
+
+  tagsContainer.appendChild(tagsLabel);
+  tagsContainer.appendChild(tagsWrapper);
+
+  form.appendChild(tagsContainer);
 
   const priceObj = createFormField('Starting Price', priceField);
   form.appendChild(priceObj.wrapper);
@@ -224,14 +233,20 @@ export default function editOwnListing(listing = null, options = {}) {
     renderImage(url);
   });
 
-  const imageUrlInput = document.createElement('input');
+  const imageUrlField = createInputWithIcon({
+    name: 'Image URL',
+    placeholder: 'Image URL',
+  });
+
+  /*const imageUrlInput = document.createElement('input');
   imageUrlInput.type = 'text';
   imageUrlInput.placeholder = 'Image URL';
   imageUrlInput.className =
-    'input w-full border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary';
+    'input w-full border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary';*/
 
-  const imageUrlObj = createFormField('Image URL', imageUrlInput);
+  const imageUrlObj = createFormField('Image URL', imageUrlField);
   imageContent.appendChild(imageUrlObj.wrapper);
+  const imageUrlInput = imageUrlObj.input;
 
   const closeButton = document.createElement('button');
   closeButton.className =

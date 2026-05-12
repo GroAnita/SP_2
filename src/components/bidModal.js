@@ -1,6 +1,7 @@
 import { placeBid } from '../services/bidService.js';
 import showToast from '../ui/showToast.js';
 import { getAuthState } from '../state/authState.js';
+import { closeModal, setupEscapeClose } from '../utils/modalUtils.js';
 
 export default function bidModal(listing) {
   const user = getAuthState();
@@ -12,6 +13,10 @@ export default function bidModal(listing) {
   const modal = document.createElement('div');
   modal.className =
     'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-labelledby', 'bid-modal-title');
+  modal.setAttribute('aria-describedby', 'bid-modal-description');
 
   const modalContent = document.createElement('div');
   modalContent.className =
@@ -21,22 +26,30 @@ export default function bidModal(listing) {
   closeButton.className =
     'absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300';
   closeButton.innerHTML = '&times;';
+  closeButton.type = 'button';
   closeButton.addEventListener('click', () => {
-    document.body.removeChild(modal);
+    closeModal(modal);
   });
 
   const title = document.createElement('h2');
   title.className = 'text-2xl font-bold mb-4';
   title.textContent = `Place a Bid on "${listing.title}"`;
+  title.id = 'bid-modal-title';
 
   const form = document.createElement('form');
   form.className = 'flex flex-col gap-4';
+
+  const bidLabel = document.createElement('label');
+  bidLabel.textContent = 'bid Amount';
+  bidLabel.setAttribute('for', 'bid-amount');
 
   const bidInput = document.createElement('input');
   bidInput.type = 'number';
   bidInput.placeholder = 'Enter your bid amount';
   bidInput.className =
     'input w-full border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary';
+  bidInput.id = 'bid-amount';
+  bidInput.min = '1';
 
   const submitButton = document.createElement('button');
   submitButton.type = 'submit';
@@ -49,6 +62,7 @@ export default function bidModal(listing) {
     return;
   }
 
+  form.appendChild(bidLabel);
   form.appendChild(bidInput);
   form.appendChild(submitButton);
 
@@ -98,6 +112,13 @@ export default function bidModal(listing) {
       console.error('BID ERROR:', error);
       showToast('Failed to place bid. Please try again.');
       return;
+    }
+  });
+
+  setupEscapeClose(modal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal(modal);
     }
   });
 

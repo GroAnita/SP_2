@@ -1,4 +1,4 @@
-export function createFormField(labelText, fieldEl) {
+export function createFormField(labelText, field) {
   const wrapper = document.createElement('div');
   wrapper.className = 'flex flex-col gap-1 w-full';
 
@@ -12,20 +12,16 @@ export function createFormField(labelText, fieldEl) {
   // generate id
   const id = labelText.toLowerCase().replace(/\s+/g, '-');
 
-  const input = fieldEl.querySelector('input, textarea');
-
-  if (input) {
-    input.id = id;
-    label.setAttribute('for', id);
-  }
+  field.input.id = id;
+  label.setAttribute('for', id);
 
   wrapper.appendChild(label);
-  wrapper.appendChild(fieldEl);
+  wrapper.appendChild(field.wrapper);
   wrapper.appendChild(error);
 
   return {
     wrapper,
-    input,
+    input: field.input,
     error,
   };
 }

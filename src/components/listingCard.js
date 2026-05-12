@@ -6,20 +6,18 @@ export default function ListingCard(listing, isFeatured = false) {
   const media = listing.media || [];
 
   const fallback = `${import.meta.env.BASE_URL}images/lemonmascot-1.png`;
-  const card = document.createElement('div');
 
-  card.addEventListener('click', () => {
-    const base = import.meta.env.BASE_URL || '';
-    history.pushState({}, '', `${base}listing?id=${listing.id}`);
-    window.dispatchEvent(new PopStateEvent('popstate'));
-  });
+  const card = document.createElement('a');
+
+  card.href = `/listing?id=${listing.id}`;
+  card.dataset.link = '';
 
   if (isFeatured) {
     card.className =
       'relative md:col-span-2 md:row-span-2 h-full overflow-hidden rounded-lg cursor-pointer group';
 
     const image = document.createElement('img');
-    image.alt = listing.title || 'Listing Image';
+    image.alt = `${listing.title} || 'Listing Image'`;
     image.className =
       'w-full h-full object-cover absolute inset-0 z-0 transition duration-500 group-hover:scale-105';
     imageFallback(image, listing.media?.[0]?.url, fallback);
@@ -80,10 +78,6 @@ export default function ListingCard(listing, isFeatured = false) {
   bid.textContent = `Highest Bid: ${getHighestBid(listing.bids)} Coins`;
   bid.className = 'text-xs';
 
-  /*const favorite = document.createElement('i');
-  favorite.className =
-    'fa-solid fa-heart absolute top-2 right-2 text-pink-500 text-xl opacity-70 hover:opacity-100 transition';*/
-
   // TIME
   const time = document.createElement('span');
   time.className = 'text-xs';
@@ -106,7 +100,6 @@ export default function ListingCard(listing, isFeatured = false) {
   content.appendChild(time);
 
   card.appendChild(image);
-  /*card.appendChild(favorite);*/
   card.appendChild(overlay);
   card.appendChild(content);
 

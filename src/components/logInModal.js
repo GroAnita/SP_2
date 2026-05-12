@@ -1,12 +1,21 @@
 import { loginUser } from '../services/authService';
+import showToast from '../ui/showToast.js';
+import {
+  createPasswordInputWithIcon,
+  createInputField,
+} from '../utils/createInputWithIcon.js';
+import { closeModal, setupEscapeClose } from '../utils/modalUtils.js';
 
 export default function logInModal() {
   const modal = document.createElement('div');
   modal.className =
     'fixed inset-0 bg-black/80 flex items-center justify-center z-50';
   modal.dataset.modal = 'login';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-labelledby', 'login-modal-title');
 
-  const content = document.createElement('div');
+  const content = document.createElement('section');
   content.className =
     'relative bg-cover bg-center text-text p-6 flex flex-col items-center justify-center rounded-lg w-full ';
 
@@ -18,10 +27,11 @@ export default function logInModal() {
   imageDiv.className =
     'hidden md:flex md:flex-col items-center justify-center z-10';
 
-  const lemonTitle = document.createElement('h2');
+  const lemonTitle = document.createElement('h1');
   lemonTitle.className =
     'relative text-3xl font-bold mb-4 text-left text-primary font-poppins z-20';
   lemonTitle.textContent = 'Welcome Back To LemonBids!';
+  lemonTitle.id = 'login-modal-title';
 
   const lemonImage = document.createElement('img');
   lemonImage.src = `${import.meta.env.BASE_URL}images/lemonmascot-1.png`;
@@ -37,19 +47,29 @@ export default function logInModal() {
   title.className = 'text-2xl font-bold mb-4 text-center font-poppins';
   title.textContent = 'Log in to your account!';
 
-  const userNameInput = document.createElement('input');
-  userNameInput.type = 'text';
-  userNameInput.name = 'username';
-  userNameInput.placeholder = 'Username';
-  userNameInput.className = 'input w-full mb-4 bg-card active:bg-secondary';
-  userNameInput.autocomplete = 'username';
+  const userNameLabel = document.createElement('label');
+  userNameLabel.textContent = 'login-Username';
+  userNameLabel.className = 'sr-only';
+  userNameLabel.htmlFor = 'username';
 
-  const passwordInput = document.createElement('input');
-  passwordInput.type = 'password';
-  passwordInput.name = 'password';
-  passwordInput.placeholder = 'Password';
-  passwordInput.autocomplete = 'current-password';
-  passwordInput.className = 'input w-full mb-4';
+  const userNameField = createInputField({
+    id: 'username',
+    name: 'username',
+    label: 'login-Username',
+    placeholder: 'Username or Email',
+  });
+
+  const passwordLabel = document.createElement('label');
+  passwordLabel.textContent = 'login-Password';
+  passwordLabel.className = 'sr-only';
+  passwordLabel.htmlFor = 'password';
+
+  const passwordField = createPasswordInputWithIcon({
+    id: 'password',
+    name: 'password',
+    label: 'login-Password',
+    placeholder: 'Password',
+  });
 
   const submitBtn = document.createElement('button');
   submitBtn.type = 'submit';
@@ -66,7 +86,7 @@ export default function logInModal() {
   link.setAttribute('data-link', '');
   link.addEventListener('click', (e) => {
     e.preventDefault();
-    modal.remove();
+    closeModal(modal);
   });
 
   newUserLink.append("Don't have an account? ", link, '.');
@@ -78,9 +98,11 @@ export default function logInModal() {
   const closeBtn = document.createElement('button');
   closeBtn.className =
     'absolute top-2 right-2 md:right-20 text-4xl text-text md:text-primary hover:text-secondary';
+  closeBtn.type = 'button';
+  closeBtn.setAttribute('aria-label', 'Close login modal');
   closeBtn.innerHTML = '&times;';
   closeBtn.addEventListener('click', () => {
-    modal.remove();
+    closeModal(modal);
   });
 
   form.addEventListener('submit', async (e) => {
@@ -89,7 +111,7 @@ export default function logInModal() {
     const password = passwordInput.value.trim();
 
     if (!username || !password) {
-      alert('Please enter both username and password.');
+      showToast('Please enter both username and password.');
       return;
     }
 
@@ -98,21 +120,26 @@ export default function logInModal() {
         email: username,
         password: password,
       });
-      modal.remove();
+      closeModal(modal);
+      showToast('Login successful!', 'success');
     } catch (error) {
-      alert(error.message || 'Login failed. Please try again.');
+      showToast(error.message || 'Login failed. Please try again.');
     }
   });
 
   form.appendChild(title);
-  form.appendChild(userNameInput);
-  form.appendChild(passwordInput);
+  form.appendChild(userNameLabel);
+  form.appendChild(userNameField.wrapper);
+  const userNameInput = userNameField.input;
+  form.appendChild(passwordLabel);
+  form.appendChild(passwordLabel);
+  form.appendChild(passwordField.wrapper);
+  const passwordInput = passwordField.input;
   form.appendChild(submitBtn);
   form.appendChild(newUserLink);
 
   form.appendChild(forgotPasswordLink);
   form.appendChild(closeBtn);
-  content.appendChild(closeBtn);
 
   content.appendChild(lemonTitle);
 
@@ -129,7 +156,12 @@ export default function logInModal() {
 
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
-      modal.remove();
+      closeModal(modal);
     }
+  });
+  setupEscapeClose(modal);
+
+  requestAnimationFrame(() => {
+    userNameInput.focus();
   });
 }
