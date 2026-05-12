@@ -101,13 +101,29 @@ export default function hamburgerMenu() {
     if (!route) return;
 
     link.href = route;
-    link.dataset.link = ''; // 👈 THIS IS THE MAGIC
+    link.dataset.link = '';
 
     link.className = 'block w-full cursor-pointer';
 
-    link.addEventListener('click', () => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
       container.classList.add('translate-x-full');
-      setTimeout(() => modal.remove(), 300);
+
+      if (item === '+ Create Listing') {
+        setTimeout(() => {
+          modal.remove();
+          import('./createNewListing.js').then((module) => {
+            module.default();
+          });
+        }, 300);
+        return;
+      }
+
+      setTimeout(() => {
+        modal.remove();
+        history.pushState({}, '', route);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }, 300);
     });
 
     listItem.appendChild(link);

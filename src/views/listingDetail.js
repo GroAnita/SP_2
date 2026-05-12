@@ -153,7 +153,7 @@ export default async function ListingDetail() {
   description.className = 'mb-4 text-sm text-text text-center';
 
   const bid = document.createElement('p');
-  bid.textContent = `Current Bid: ${listing.bids?.length ? Math.max(...listing.bids.map((b) => b.amount)) : 0} credits`;
+  bid.textContent = `Current Bid: ${listing.bids?.length ? Math.max(...listing.bids.map((b) => b.amount)) : 0} Coins`;
   bid.className = 'text-2xl font-bold text-secondary mt-1';
 
   const itemBids = document.createElement('p');
@@ -234,7 +234,7 @@ export default async function ListingDetail() {
     }
 
     const amount = document.createElement('span');
-    amount.textContent = `${bid.amount} credits`;
+    amount.textContent = `${bid.amount} Coins`;
 
     row.appendChild(name);
     row.appendChild(amount);
@@ -255,7 +255,7 @@ export default async function ListingDetail() {
   shipping.className = 'text-sm text-text flex flex-col gap-1';
   shipping.innerHTML = `
   <p class="font-semibold">Shipping</p>
-  <p>Fast delivery within 3-5 business days. Free shipping on orders over 100 credits.</p>
+  <p>Fast delivery within 3-5 business days. Free shipping on orders over 100 Coins.</p>
   <p class="text-xs text-text/60"> Location: Global Marketplace</p>
   `;
 
@@ -270,7 +270,7 @@ export default async function ListingDetail() {
   payments.className = 'text-sm text-text flex flex-col gap-1';
   payments.innerHTML = `
     <p class="font-semibold">Payments</p>
-    <p>We accept all major credit cards and our platform credits. Payment is done with "Coins" that you buy before bidding , to ensure funds</p>
+    <p>We accept all major credit cards and our platform Coins. Payment is done with "Coins" that you buy before bidding , to ensure funds</p>
     `;
 
   shippingSection.appendChild(shipping);
@@ -358,7 +358,7 @@ export default async function ListingDetail() {
 
       // update numbers
       const highestBid = Math.max(...listing.bids.map((b) => b.amount));
-      bid.textContent = `Current Bid: ${highestBid} credits`;
+      bid.textContent = `Current Bid: ${highestBid} Coins`;
       itemBids.textContent = `(${listing.bids.length} bids)`;
 
       // update status

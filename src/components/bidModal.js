@@ -65,7 +65,7 @@ export default function bidModal(listing) {
       : 0;
     if (bidAmount <= highestBid) {
       showToast(
-        `Your bid must be higher than the current highest bid of ${highestBid} credits.`
+        `Your bid must be higher than the current highest bid of ${highestBid} Coins.`
       );
       return;
     }

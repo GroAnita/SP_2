@@ -1,6 +1,7 @@
 import listingCard from '../components/listingCard.js';
 import { fetchListings } from '../services/listingService.js';
 import Breadcrumbs from '../components/breadcrumbs.js';
+import Loader from '../components/loader.js';
 
 /**
  * Creates and renders the Listings page.
@@ -84,7 +85,8 @@ export default async function Listings() {
   listingGrid.className =
     'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-8 auto-rows-[300px] h-full relative mx-auto';
 
-  listingGrid.innerHTML = '<p>Loading...</p>';
+  listingGrid.innerHTML = '';
+  listingGrid.appendChild(Loader('lg'));
 
   const pagination = document.createElement('div');
   pagination.className = 'flex justify-center mt-6 gap-4';
@@ -192,7 +194,8 @@ export default async function Listings() {
     if (isLoading) return;
     isLoading = true;
 
-    listingGrid.innerHTML = '<p>Loading...</p>';
+    listingGrid.innerHTML = '';
+    listingGrid.appendChild(Loader('lg'));
 
     try {
       const result = await fetchListings({ page, limit: query ? 100 : limit });

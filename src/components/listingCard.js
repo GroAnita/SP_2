@@ -41,7 +41,7 @@ export default function ListingCard(listing, isFeatured = false) {
     title.className = 'text-lg font-bold';
 
     const bid = document.createElement('p');
-    bid.textContent = `Highest Bid: ${getHighestBid(listing.bids)} credits`;
+    bid.textContent = `Highest Bid: ${getHighestBid(listing.bids)} Coins`;
     bid.className = 'font-bold';
 
     content.appendChild(badge);
@@ -77,7 +77,7 @@ export default function ListingCard(listing, isFeatured = false) {
   title.className = 'text-sm font-bold truncate';
 
   const bid = document.createElement('p');
-  bid.textContent = `Highest Bid: ${getHighestBid(listing.bids)} credits`;
+  bid.textContent = `Highest Bid: ${getHighestBid(listing.bids)} Coins`;
   bid.className = 'text-xs';
 
   /*const favorite = document.createElement('i');
