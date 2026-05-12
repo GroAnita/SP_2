@@ -81,13 +81,11 @@ export default function hamburgerMenu() {
     coins.style.display = 'none';
   }
 
-  const menuItems = [
-    'Home',
-    'My Bids',
-    'My Listings',
-    'My Profile',
-    '+ Create Listing',
-  ];
+  const menuItems = ['Home'];
+
+  if (user) {
+    menuItems.push('My Bids', 'My Listings', 'My Profile', '+ Create Listing');
+  }
 
   const nav = document.createElement('nav');
   nav.setAttribute('aria-label', 'Primary navigation');

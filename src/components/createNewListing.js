@@ -6,6 +6,36 @@ import optimizeImageUrl from '../utils/optimizeImageUrl.js';
 import { closeModal, setupEscapeClose } from '../utils/modalUtils.js';
 import { createInputField } from '../utils/createInputWithIcon.js';
 
+/**
+ * Creates and renders the "Create New Listing" modal.
+ *
+ * This modal allows users to:
+ * - Add a title and description
+ * - Add tags
+ * - Set auction dates
+ * - Upload image URLs with previews
+ * - Submit a new listing to the API
+ *
+ * Features:
+ * - Accessible modal behavior
+ * - Escape key support
+ * - Click outside to close
+ * - Dynamic image preview grid
+ * - Tag management
+ * - Toast notifications
+ * - Form validation
+ *
+ * Dependencies:
+ * - createFormField
+ * - createInputField
+ * - renderTags
+ * - createListing
+ * - optimizeImageUrl
+ * - closeModal
+ * - setupEscapeClose
+ *
+ * @returns {void}
+ */
 export default function CreateNewListing() {
   const modal = document.createElement('div');
   modal.className =
@@ -58,6 +88,10 @@ export default function CreateNewListing() {
   form.appendChild(descriptionObj.wrapper);
   const descriptionInput = descriptionObj.input;
 
+  /**
+   * Stores all tags added to the listing.
+   * @type {string[]}
+   */
   const tags = [];
 
   const tagsSection = document.createElement('div');
@@ -133,8 +167,15 @@ export default function CreateNewListing() {
   form.appendChild(endDateObj.wrapper);
   const endDateInput = endDateObj.input;
 
+  /**
+   * Stores all image URLs added to the listing.
+   * @type {string[]}
+   */
   const images = [];
 
+  /**
+   * Handles adding image previews to the image grid.
+   */
   const addImageButton = document.createElement('button');
   addImageButton.type = 'button';
   addImageButton.className =
@@ -152,6 +193,7 @@ export default function CreateNewListing() {
       return;
     }
     images.push(url);
+
     const imageWrapper = document.createElement('div');
     imageWrapper.className = 'relative';
 
@@ -226,6 +268,7 @@ export default function CreateNewListing() {
   cancelButton.addEventListener('click', () => {
     closeModal(modal);
   });
+
   modalContent.appendChild(modalTitle);
   modalContent.appendChild(closeButton);
 
@@ -250,6 +293,13 @@ export default function CreateNewListing() {
     titleInput.focus();
   });
 
+  /**
+   * Handling listing creation form submissions.
+   *
+   * Validates the required fields,
+   * transforms image URLs into media objects,
+   * and sends the listing payload to the API.
+   */
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -287,6 +337,9 @@ export default function CreateNewListing() {
     }
   });
   setupEscapeClose(modal);
+  /**
+   * Closes modal when clicking outside the modal content.
+   */
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
       closeModal(modal);
