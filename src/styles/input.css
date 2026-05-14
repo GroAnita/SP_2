@@ -107,7 +107,7 @@ body {
     @apply bg-error;
   }
   .input {
-    @apply bg-card text-text rounded-lg shadow-md p-3 w-full focus:outline-none focus:border-none focus:ring-2 focus:ring-primary;
+    @apply bg-card text-text border border-border rounded-lg shadow-md p-3 w-full focus:outline-none focus:border-none focus:ring-2 focus:ring-primary;
   }
   .input:focus {
     @apply ring-primary;

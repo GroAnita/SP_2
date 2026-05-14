@@ -1,6 +1,51 @@
 import { setupEscapeClose } from '../utils/modalUtils';
 import { closeModal } from '../utils/modalUtils.js';
 
+/**
+ * Creates and shows a reusable confirmation modal.
+ *
+ * Features:
+ * - Accessible modal dialog
+ * - Keyboard support (Escape to close)
+ * - Click outside to close
+ * - Custom title, message, and button text
+ * - Async confirmation handling
+ * - Automatic focus management
+ *
+ * Used for confirming destructive or important actions
+ * such as deleting listings or removing data.
+ *
+ * @function confirmModal
+ *
+ * @param {Object} options - Modal configuration options
+ * @param {string} [options.title='Confirm Action']
+ * Modal title text
+ *
+ * @param {string} [options.message='Are you sure?']
+ * Modal message/body text
+ *
+ * @param {string} [options.confirmText='Confirm']
+ * Text displayed on the confirm button
+ *
+ * @param {string} [options.cancelText='Cancel']
+ * Text displayed on the cancel button
+ *
+ * @param {Function} [options.onConfirm]
+ * Async or sync callback triggered when the user confirms
+ *
+ * @returns {void}
+ *
+ * @example
+ * confirmModal({
+ *   title: 'Delete Listing',
+ *   message: 'Are you sure you want to delete this listing?',
+ *   confirmText: 'Delete',
+ *   cancelText: 'Keep Listing',
+ *   onConfirm: async () => {
+ *     await deleteListing(id);
+ *   },
+ * });
+ */
 export default function confirmModal({
   title = 'Confirm Action',
   message = 'Are you sure?',

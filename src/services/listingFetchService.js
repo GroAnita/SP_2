@@ -45,12 +45,6 @@ export async function fetchListings({ page = 1, limit = 18 } = {}) {
       `/auction/listings?_active=${onlyActive}&_bids=true&_seller=true&page=${page}&limit=${limit}&sort=created&sortOrder=desc`
     );
 
-    console.log('PAGE:', page);
-    console.log(
-      'IDS:',
-      result.data.map((l) => l.id)
-    );
-
     return result;
   } catch (error) {
     console.error('Error fetching the listings:', error);

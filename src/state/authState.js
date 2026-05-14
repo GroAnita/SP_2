@@ -111,7 +111,6 @@ export function isLoggedIn() {
  *
  * @example
  * const user = getCurrentUser();
- * console.log(user.username);
  */
 export function getCurrentUser() {
   const state = getAuthState();

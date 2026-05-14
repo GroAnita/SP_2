@@ -109,24 +109,60 @@ export default async function Profile() {
   editAvatarBtn.setAttribute('aria-label', 'Edit Profile Avatar');
 
   editAvatarBtn.addEventListener('click', () => {
-    const newAvatarUrl = prompt('Enter new avatar URL:');
-    if (!newAvatarUrl) return;
-    updateProfile({
-      avatar: {
-        url: newAvatarUrl,
-      },
-    })
-      .then((result) => {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = user?.avatar?.url || '';
+    input.placeholder = 'Enter avatar image URL';
+    input.className = 'input w-full mt-2';
+
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = 'Save';
+    saveBtn.className = 'btn-primary mt-2';
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.className = 'btn-secondary mt-2 ml-2';
+
+    avatarWrapper.innerHTML = '';
+
+    avatarWrapper.appendChild(profileImage);
+    avatarWrapper.appendChild(input);
+    avatarWrapper.appendChild(saveBtn);
+    avatarWrapper.appendChild(cancelBtn);
+
+    saveBtn.addEventListener('click', async () => {
+      try {
+        const result = await updateProfile({
+          avatar: {
+            url: input.value,
+          },
+        });
+
         localStorage.setItem(
           'authUser',
-          JSON.stringify({ ...user, avatar: result.data.avatar })
+          JSON.stringify({
+            ...user,
+            avatar: result.data.avatar,
+          })
         );
-        profileImage.src = newAvatarUrl;
+
+        profileImage.src = result.data.avatar.url;
+
+        avatarWrapper.innerHTML = '';
+        avatarWrapper.appendChild(profileImage);
+        avatarWrapper.appendChild(editAvatarBtn);
+
         showToast('Avatar updated successfully!', 'success');
-      })
-      .catch(() => {
-        showToast('Error updating avatar. Please try again later.', 'error');
-      });
+      } catch (error) {
+        showToast('Error updating avatar.', 'error');
+      }
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      avatarWrapper.innerHTML = '';
+      avatarWrapper.appendChild(profileImage);
+      avatarWrapper.appendChild(editAvatarBtn);
+    });
   });
 
   const profileInfo = document.createElement('section');

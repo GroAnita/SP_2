@@ -158,7 +158,7 @@ export default async function ListingDetail() {
 
   const itemBids = document.createElement('p');
   itemBids.textContent = `(${listing.bids?.length || 0} bids)`;
-  itemBids.className = 'text-sm text-text/60';
+  itemBids.className = 'text-sm text-text';
 
   const bidWrapper = document.createElement('div');
   bidWrapper.className = 'text-2xl font-bold text-secondary';
@@ -181,29 +181,25 @@ export default async function ListingDetail() {
   bidWrapper.appendChild(bidderStatus);
 
   const bidBtn = document.createElement('button');
+
   bidBtn.className =
-    'mt-4 bg-primary text-gray-900 font-bold py-2 w-full rounded-lg border-2 border-text hover:scale-105 transition';
+    'mt-4 bg-primary text-gray-900 font-bold py-2 w-full rounded-lg border-2 border-text transition';
+
   bidBtn.textContent = 'Place Bid';
 
-  const user = getAuthState();
-  const isOwner = listing.seller?.name === user?.name;
+  const isOwner = listing.seller?.name === currentUser?.name;
 
   if (isOwner) {
     bidBtn.disabled = true;
-    bidBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    bidBtn.classList.add('opacity-50', 'cursor-not-allowed', 'hover:scale-100');
+
     bidBtn.textContent = 'You cannot bid on your own listing';
+  } else {
+    bidBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      bidModal(listing);
+    });
   }
-
-  bidBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-
-    const user = getAuthState();
-    if (listing.seller?.name === user?.name) {
-      showToast('You cannot bid on your own listing.', 'warning');
-      return;
-    }
-    bidModal(listing);
-  });
 
   const bidHistory = document.createElement('div');
   bidHistory.className = 'mt-4 flex flex-col gap-2 text-sm text-text text-left';
@@ -256,14 +252,14 @@ export default async function ListingDetail() {
   shipping.innerHTML = `
   <p class="font-semibold">Shipping</p>
   <p>Fast delivery within 3-5 business days. Free shipping on orders over 100 Coins.</p>
-  <p class="text-xs text-text/60"> Location: Global Marketplace</p>
+  <p class="text-xs text-text"> Location: Global Marketplace</p>
   `;
 
   const returns = document.createElement('div');
   returns.className = 'text-sm text-text flex flex-col gap-1';
   returns.innerHTML = `
   <p class="font-semibold">Returns</p>
-  <p class="text-text/60 text-xs">No Returns. Please review the item details and ask any questions before bidding.</p>
+  <p class="text-text text-xs">No Returns. Please review the item details and ask any questions before bidding.</p>
   `;
 
   const payments = document.createElement('div');
@@ -285,7 +281,7 @@ export default async function ListingDetail() {
 
     const title = document.createElement('p');
     title.textContent = titleText;
-    title.className = 'text-xs uppercase text-text/60 tracking-wide';
+    title.className = 'text-xs uppercase text-text tracking-wide';
 
     section.appendChild(title);
     section.appendChild(contentEl);
@@ -333,9 +329,6 @@ export default async function ListingDetail() {
     bidBtn.textContent = 'Auction Ended';
   }
   function handleBidPlaced(e) {
-    console.log('EVENT FIRED', e.detail);
-    console.log('LISTING ID', listing.id);
-    // 👇 VERY important: only react if THIS listing was updated
     if (e.detail.listingId !== listing.id) return;
 
     refreshListing();

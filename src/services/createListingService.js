@@ -21,7 +21,7 @@ export async function createListing(data) {
  * @returns {Promise<Object>} Listing with bid data.
  */
 export async function fetchSingleListing(id) {
-  return await apiClient(`/auction/listings/${id}?_bids=true`);
+  return await apiClient(`/auction/listings/${id}?_bids=true&_seller=true`);
 }
 
 /**

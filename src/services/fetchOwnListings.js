@@ -15,7 +15,6 @@ import { getAuthState } from '../state/authState.js';
  *
  * @example
  * const myListings = await fetchOwnListings();
- * console.log(myListings); // [{ id, title, bids, seller, ... }]
  *
  * @returns {Promise<Array>} Returns an empty array if:
  * - The user is not logged in

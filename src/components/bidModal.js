@@ -42,8 +42,7 @@ export default function bidModal(listing) {
   modal.setAttribute('aria-describedby', 'bid-modal-description');
 
   const modalContent = document.createElement('div');
-  modalContent.className =
-    'bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md relative';
+  modalContent.className = 'bg-card rounded-lg p-6 w-full max-w-md relative';
 
   const closeButton = document.createElement('button');
   closeButton.className =
@@ -55,7 +54,7 @@ export default function bidModal(listing) {
   });
 
   const title = document.createElement('h2');
-  title.className = 'text-2xl font-bold mb-4';
+  title.className = 'text-2xl text-text font-bold mb-4';
   title.textContent = `Place a Bid on "${listing.title}"`;
   title.id = 'bid-modal-title';
 
@@ -63,8 +62,9 @@ export default function bidModal(listing) {
   form.className = 'flex flex-col gap-4';
 
   const bidLabel = document.createElement('label');
-  bidLabel.textContent = 'bid Amount';
+  bidLabel.textContent = 'Bid Amount';
   bidLabel.setAttribute('for', 'bid-amount');
+  bidLabel.className = 'text-text font-semibold';
 
   const bidInput = document.createElement('input');
   bidInput.type = 'number';
@@ -77,7 +77,7 @@ export default function bidModal(listing) {
   const submitButton = document.createElement('button');
   submitButton.type = 'submit';
   submitButton.className =
-    'bg-primary text-text px-4 py-2 border border-text rounded hover:bg-primary-dark transition';
+    'bg-primary text-header px-4 py-2 border border-text rounded transition';
   submitButton.textContent = 'Place Bid';
 
   if (listing.seller?.name === user?.name) {
@@ -92,7 +92,7 @@ export default function bidModal(listing) {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const bidAmount = parseFloat(bidInput.value);
-    console.log('BID AMOUNT:', bidAmount, typeof bidAmount);
+
     if (isNaN(bidAmount) || bidAmount <= 0) {
       alert('Please enter a valid bid amount.');
       return;

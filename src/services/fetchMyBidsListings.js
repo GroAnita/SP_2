@@ -1,4 +1,3 @@
-import { getAuthState } from '../state/authState.js';
 import apiClient from './apiClient.js';
 
 /**
@@ -16,7 +15,6 @@ import apiClient from './apiClient.js';
  *
  * @example
  * const listings = await fetchMyBidsListings();
- * console.log(listings); // [{ id, title, bids, seller, ... }]
  *
  * @throws Will not throw errors directly; returns an empty array on failure.
  */
