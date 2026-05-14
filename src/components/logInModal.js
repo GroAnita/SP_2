@@ -6,6 +6,24 @@ import {
 } from '../utils/createInputWithIcon.js';
 import { closeModal, setupEscapeClose } from '../utils/modalUtils.js';
 
+/**
+ * Creates and displays the login modal.
+ *
+ * Features:
+ * - Accessible modal dialog
+ * - Username/email and password login
+ * - Password visibility toggle
+ * - SPA navigation support
+ * - Login validation and error handling
+ * - Escape key and overlay close support
+ * - Autofocus on username field
+ * - Links to registration and password recovery
+ *
+ * Authentication state updates are handled through the
+ * login service and auth-related events.
+ *
+ * @returns {void}
+ */
 export default function logInModal() {
   const modal = document.createElement('div');
   modal.className =
@@ -105,6 +123,13 @@ export default function logInModal() {
     closeModal(modal);
   });
 
+  /**
+   * Handles login form submission and authentication.
+   *
+   * Validates required fields before attempting login.
+   * Displays toast feedback for success or failure.
+   */
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = userNameInput.value.trim();
@@ -132,7 +157,6 @@ export default function logInModal() {
   form.appendChild(userNameField.wrapper);
   const userNameInput = userNameField.input;
   form.appendChild(passwordLabel);
-  form.appendChild(passwordLabel);
   form.appendChild(passwordField.wrapper);
   const passwordInput = passwordField.input;
   form.appendChild(submitBtn);
@@ -154,6 +178,9 @@ export default function logInModal() {
 
   document.body.appendChild(modal);
 
+  /**
+   * Close modal when clicking outside the modal content.
+   */
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
       closeModal(modal);
@@ -161,6 +188,9 @@ export default function logInModal() {
   });
   setupEscapeClose(modal);
 
+  /**
+   * Autofocus username input after modal renders.
+   */
   requestAnimationFrame(() => {
     userNameInput.focus();
   });

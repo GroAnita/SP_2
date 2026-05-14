@@ -1,3 +1,17 @@
+/**
+ * Creates a text input field with a clickable pen icon.
+ *
+ * @param {Object} options - Input configuration options.
+ * @param {string} options.id - Unique input ID.
+ * @param {string} options.name - Input name attribute.
+ * @param {string} options.label - Accessible label text.
+ * @param {string} [options.type='text'] - Input type.
+ * @param {string} [options.value=''] - Default input value.
+ * @param {string} [options.placeholder=''] - Input placeholder text.
+ *
+ * @returns {{wrapper: HTMLDivElement, input: HTMLInputElement}}
+ * Returns the wrapper element and input element.
+ */
 export function createInputWithIcon({
   id,
   name,
@@ -35,6 +49,19 @@ export function createInputWithIcon({
   return { wrapper, input };
 }
 
+/**
+ * Creates a textarea field with a clickable pen icon.
+ *
+ * @param {Object} options - Textarea configuration options.
+ * @param {string} options.id - Unique textarea ID.
+ * @param {string} options.name - Textarea name attribute.
+ * @param {string} options.label - Accessible label text.
+ * @param {string} [options.value=''] - Default textarea value.
+ * @param {string} [options.placeholder=''] - Textarea placeholder text.
+ *
+ * @returns {{wrapper: HTMLDivElement, input: HTMLTextAreaElement}}
+ * Returns the wrapper element and textarea element.
+ */
 export function createTextareaWithIcon({
   id,
   name,
@@ -70,6 +97,25 @@ export function createTextareaWithIcon({
   return { wrapper, input: textarea };
 }
 
+/**
+ * Creates a password input field with a toggle visibility button.
+ *
+ * Features:
+ * - Toggle between hidden and visible password
+ * - Accessible toggle button
+ * - Dynamic eye / eye-slash icon
+ *
+ * @param {Object} options - Password field configuration.
+ * @param {string} options.id - Unique input ID.
+ * @param {string} options.name - Input name attribute.
+ * @param {string} options.label - Accessible label text.
+ * @param {string} [options.value=''] - Default password value.
+ * @param {string} [options.placeholder=''] - Input placeholder text.
+ * @param {string} [options.autocomplete=''] - Autocomplete value.
+ *
+ * @returns {{wrapper: HTMLDivElement, input: HTMLInputElement}}
+ * Returns the wrapper element and password input element.
+ */
 export function createPasswordInputWithIcon({
   id,
   name,
@@ -127,6 +173,27 @@ export function createPasswordInputWithIcon({
   return { wrapper, input };
 }
 
+/**
+ * Creates a reusable input or textarea field.
+ *
+ * Supports:
+ * - Standard inputs
+ * - Textareas
+ * - Optional pen icon
+ * - Custom autocomplete values
+ *
+ * @param {Object} options - Field configuration options.
+ * @param {string} [options.type='text'] - Field type.
+ * @param {string} options.name - Field name attribute.
+ * @param {string} options.id - Unique field ID.
+ * @param {string} [options.value=''] - Default field value.
+ * @param {string} [options.placeholder=''] - Placeholder text.
+ * @param {boolean} [options.icon=false] - Whether to show a pen icon.
+ * @param {string} [options.autocomplete=''] - Autocomplete value.
+ *
+ * @returns {{wrapper: HTMLDivElement, input: HTMLInputElement|HTMLTextAreaElement}}
+ * Returns the wrapper element and created field element.
+ */
 export function createInputField({
   type = 'text',
   name,

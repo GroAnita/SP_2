@@ -61,7 +61,7 @@ export default async function ListingDetail() {
       : [{ url: fallback }];
 
   const title = document.createElement('h1');
-  title.className = 'text-3xl text-text font-bold mb-4';
+  title.className = 'text-3xl text-text font-bold mb-4 line-clamp-2';
   title.textContent = listing.title;
 
   const gallery = document.createElement('div');

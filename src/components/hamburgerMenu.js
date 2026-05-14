@@ -2,10 +2,31 @@ import { getAuthState } from '../state/authState.js';
 import { logoutUser } from '../services/authService.js';
 import { fetchMyProfile } from '../services/profileService.js';
 import logInModal from './logInModal';
-import showToast from '../ui/showToast.js';
 import navigate from '../utils/navigate.js';
 import { closeModal, setupEscapeClose } from '../utils/modalUtils.js';
+import showToast from '../ui/showToast.js';
+import confirmModal from './confirmModal.js';
 
+/**
+ * Creates and displays the mobile hamburger navigation menu.
+ *
+ * The menu adapts based on the user's authentication state:
+ * - Guests can only access public navigation and login.
+ * - Authenticated users can access profile pages, listings,
+ *   bidding pages, and create new listings.
+ *
+ * Features:
+ * - Animated slide-in mobile menu
+ * - User profile preview
+ * - Credits display
+ * - Login/logout handling
+ * - Search input for listings
+ * - Protected "Create Listing" access
+ * - Escape key and overlay close support
+ * - Dynamic SPA navigation
+ *
+ * @returns {void}
+ */
 export default function hamburgerMenu() {
   const user = getAuthState();
   const modal = document.createElement('div');
@@ -54,21 +75,34 @@ export default function hamburgerMenu() {
     'fa-solid fa-right-from-bracket mt-1 text-2xl text-text px-3 py-1 rounded  transition';
   logOutButton.setAttribute('aria-label', 'Log out');
   logOutButton.type = 'button';
+  // Adding a confirmation modal before logging out to prevent accidental logouts.
   logOutButton.addEventListener('click', () => {
-    logoutUser();
+    confirmModal({
+      title: 'Log Out',
+      message: 'Are you sure you want to log out?',
+      confirmText: 'Log Out',
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        logoutUser();
 
-    container.classList.add('translate-x-full');
+        container.classList.add('translate-x-full');
 
-    setTimeout(() => {
-      modal.remove();
-      document.dispatchEvent(new Event('auth:changed'));
-    }, 300);
+        setTimeout(() => {
+          modal.remove();
+          document.dispatchEvent(new Event('auth:changed'));
+        }, 300);
+      },
+    });
   });
 
   const coins = document.createElement('div');
   coins.className =
     'bg-header text-primary px-3 py-1 border-2 border-primary rounded-full font-bold text-sm';
   coins.textContent = '...';
+  /**
+   * Fetch and display the authenticated user's credits.
+   * Falls back to locally stored credits if the request fails.
+   */
   if (user) {
     fetchMyProfile()
       .then((profile) => {
@@ -121,6 +155,17 @@ export default function hamburgerMenu() {
       container.classList.add('translate-x-full');
 
       if (item === '+ Create Listing') {
+        /**
+         * Prevents guests from opening the create listing modal.
+         *
+         * Even though the menu item is hidden for unauthenticated users,
+         * this acts as an additional layer of protection against manual
+         * DOM manipulation or forced navigation attempts.
+         */
+        if (!user) {
+          showToast('You must be logged in to create a listing.', 'warning');
+          return;
+        }
         setTimeout(() => {
           modal.remove();
           import('./createNewListing.js').then((module) => {
@@ -178,6 +223,10 @@ export default function hamburgerMenu() {
   searchInputMobile.className = 'input block md:hidden w-full mt-4';
   searchInputMobile.id = 'mobile-search';
 
+  /**
+   * Handle listing search from the mobile navigation menu.
+   * Navigates to the listings page with a query parameter.
+   */
   searchInputMobile.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -205,7 +254,6 @@ export default function hamburgerMenu() {
   // BUILD MODAL
   container.appendChild(closeButton);
   container.appendChild(userSection);
-  userSection.appendChild(userInfo);
   userInfo.appendChild(userName);
   userInfo.appendChild(userEmail);
   container.appendChild(actionBtnSection);

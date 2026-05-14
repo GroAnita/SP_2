@@ -34,7 +34,7 @@ import Loader from '../components/loader.js';
  */
 export default async function Listings() {
   let page = 1;
-  const limit = 17;
+  const limit = 18;
   let isLastPage = false;
   let isLoading = false;
   const params = new URLSearchParams(window.location.search);

@@ -292,6 +292,15 @@ export default async function Profile() {
       // fade in
       ownListingSection.classList.remove('opacity-0');
     }, 150);
+
+    document.addEventListener('listingDeleted', (e) => {
+      const deletedId = e.detail;
+      const card = document.querySelector(`[data-listing-id="${deletedId}"]`);
+      if (card) {
+        card.remove();
+        showToast('Listing removed from your profile.', 'success');
+      }
+    });
   }
 
   const ownListingSection = document.createElement('section');

@@ -1,7 +1,22 @@
+/**
+ * Creates a reusable loading spinner component.
+ *
+ * Supports multiple sizes for different UI contexts:
+ * - sm → small inline loaders
+ * - md → default page loaders
+ * - lg → large section loaders
+ *
+ * Includes screen reader text for accessibility.
+ *
+ * @param {'sm' | 'md' | 'lg'} [size='md'] - Loader size variant.
+ * @returns {HTMLDivElement} Loader wrapper element.
+ */
 export default function Loader(size = 'md') {
   const loaderWrapper = document.createElement('div');
   loaderWrapper.className =
     'flex justify-center items-center py-10 col-span-full';
+  loaderWrapper.setAttribute('aria-live', 'polite');
+  loaderWrapper.setAttribute('role', 'status');
 
   const loader = document.createElement('div');
   loader.setAttribute('aria-hidden', 'true');

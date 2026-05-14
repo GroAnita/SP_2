@@ -1,3 +1,16 @@
+/**
+ * Validates whether a password meets security requirements.
+ *
+ * Requirements:
+ * - Minimum 8 characters
+ * - At least one uppercase letter
+ * - At least one lowercase letter
+ * - At least one number
+ * - At least one special character
+ *
+ * @param {string} password - Password to validate.
+ * @returns {boolean} True if password is valid.
+ */
 export function isValidPassword(password) {
   return (
     password.length >= 8 &&
@@ -8,20 +21,63 @@ export function isValidPassword(password) {
   );
 }
 
+/**
+ * Validates a phone number.
+ *
+ * Supports:
+ * - Optional leading +
+ * - Numbers
+ * - Spaces
+ * - Hyphens
+ *
+ * @param {string} phone - Phone number to validate.
+ * @returns {boolean} True if phone number is valid.
+ */
 export function isValidPhone(phone) {
   const phoneRegex = /^\+?[\d\s-]{7,15}$/;
   return phoneRegex.test(phone.trim());
 }
 
+/**
+ * Validates an address field.
+ *
+ * Checks that the address is not empty.
+ *
+ * @param {string} address - Address to validate.
+ * @returns {boolean} True if address is valid.
+ */
 export function isValidAddress(address) {
   return address.trim().length > 0;
 }
 
+/**
+ * Validates a username.
+ *
+ * Requirements:
+ * - 3–20 characters
+ * - Letters
+ * - Numbers
+ * - Underscores
+ * - Hyphens
+ *
+ * @param {string} name - Username to validate.
+ * @returns {boolean} True if username is valid.
+ */
 export function isValidUsername(name) {
   const nameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
   return nameRegex.test(name.trim());
 }
 
+/**
+ * Validates a Noroff student email address.
+ *
+ * Requirements:
+ * - Valid email format
+ * - Must end with @stud.noroff.no
+ *
+ * @param {string} email - Email address to validate.
+ * @returns {boolean} True if email is valid.
+ */
 export function isValidEmail(email) {
   if (!email) return false;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,6 +86,27 @@ export function isValidEmail(email) {
   );
 }
 
+/**
+ * Validates registration form data.
+ *
+ * Checks:
+ * - Username validity
+ * - Email validity
+ * - Password validity
+ *
+ * Returns the first validation error encountered.
+ *
+ * @param {Object} data - Registration form data.
+ * @param {string} data.username - Username value.
+ * @param {string} data.email - Email value.
+ * @param {string} data.password - Password value.
+ *
+ * @returns {{
+ *   valid: boolean,
+ *   message?: string
+ * }}
+ * Validation result object.
+ */
 export function validateRegisterForm(data) {
   if (!isValidUsername(data.username)) {
     return {
@@ -55,6 +132,25 @@ export function validateRegisterForm(data) {
   return { valid: true };
 }
 
+/**
+ * Enhances a field with:
+ * - Validation state icon
+ * - Error message element
+ *
+ * Used for real-time form validation feedback.
+ *
+ * @param {Object} field - Field object from input factory.
+ * @param {HTMLDivElement} field.wrapper - Field wrapper element.
+ * @param {HTMLInputElement|HTMLTextAreaElement} field.input - Field element.
+ *
+ * @returns {{
+ *   wrapper: HTMLDivElement,
+ *   input: HTMLInputElement|HTMLTextAreaElement,
+ *   icon: HTMLSpanElement,
+ *   error: HTMLParagraphElement
+ * }}
+ * Enhanced validation field object.
+ */
 export function validationFields(field) {
   const { wrapper, input } = field;
 
@@ -72,6 +168,22 @@ export function validationFields(field) {
   return { wrapper, input, icon, error };
 }
 
+/**
+ * Updates the visual validation state of a form field.
+ *
+ * Handles:
+ * - Border colors
+ * - Validation icons
+ * - Error messages
+ *
+ * @param {HTMLInputElement|HTMLTextAreaElement} input - Field element.
+ * @param {HTMLSpanElement} icon - Validation icon element.
+ * @param {HTMLParagraphElement} errorEl - Error message element.
+ * @param {boolean} isValid - Validation state.
+ * @param {string} [message=''] - Error message text.
+ *
+ * @returns {void}
+ */
 export function updateFieldState(input, icon, errorEl, isValid, message = '') {
   input.classList.remove('border-red-500', 'border-green-500');
 

@@ -1,9 +1,33 @@
+import confirmModal from './confirmModal';
+
+/**
+ * Creates a dropdown action menu for a listing card.
+ *
+ * Features:
+ * - Toggleable dropdown menu
+ * - Edit and delete actions
+ * - Relist action for inactive listings
+ * - Closes when clicking outside
+ * - Closes on Escape key press
+ * - Accessible button and menu controls
+ *
+ * @param {Object} params - Dropdown configuration object.
+ * @param {Object} params.listing - Listing data object.
+ * @param {string} params.listing.title - Listing title.
+ * @param {string} params.listing.endsAt - Listing end date.
+ * @param {Function} [params.onEdit] - Callback fired when edit is clicked.
+ * @param {Function} [params.onDelete] - Callback fired when delete is clicked.
+ * @param {Function} [params.onRelist] - Callback fired when relist is clicked.
+ *
+ * @returns {HTMLDivElement} Dropdown menu wrapper element.
+ */
 export default function listingDropdownMenu({
   listing,
   onEdit,
   onDelete,
   onRelist,
 }) {
+  // Check if listing is still active
   const isActive = new Date(listing.endsAt) > new Date();
 
   const wrapper = document.createElement('div');
@@ -85,7 +109,15 @@ export default function listingDropdownMenu({
   // delete
   del.addEventListener('click', () => {
     menu.classList.add('hidden');
-    onDelete?.();
+    confirmModal({
+      title: 'Delete Listing',
+      message: `Are you sure you want to delete "${listing.title}"? This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        await onDelete?.();
+      },
+    });
   });
 
   document.addEventListener('keydown', (e) => {

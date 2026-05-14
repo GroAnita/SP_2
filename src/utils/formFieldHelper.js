@@ -1,3 +1,25 @@
+/**
+ * Creates a reusable form field wrapper with:
+ * - Label
+ * - Input/textarea wrapper
+ * - Error message element
+ *
+ * Automatically generates and assigns an accessible ID
+ * based on the label text.
+ *
+ * @param {string} labelText - Visible label text for the field.
+ *
+ * @param {Object} field - Field object returned from an input factory.
+ * @param {HTMLDivElement} field.wrapper - Wrapper containing the field UI.
+ * @param {HTMLInputElement|HTMLTextAreaElement} field.input - Input or textarea element.
+ *
+ * @returns {{
+ *   wrapper: HTMLDivElement,
+ *   input: HTMLInputElement|HTMLTextAreaElement,
+ *   error: HTMLParagraphElement
+ * }}
+ * Returns the completed form field structure.
+ */
 export function createFormField(labelText, field) {
   const wrapper = document.createElement('div');
   wrapper.className = 'flex flex-col gap-1 w-full';

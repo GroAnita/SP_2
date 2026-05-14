@@ -191,7 +191,7 @@ export default function RegisterUserForm() {
       showToast('Registration successful! Welcome to LemonBids.', 'success');
       setTimeout(() => {
         const base = import.meta.env.BASE_URL || '';
-        window.history.pushState({}, '', `${base}/profile`);
+        window.history.pushState({}, '', `${base}profile`);
         document.dispatchEvent(new Event('auth:changed'));
       }, 1500);
     } catch (error) {

@@ -3,6 +3,29 @@ import showToast from '../ui/showToast.js';
 import { getAuthState } from '../state/authState.js';
 import { closeModal, setupEscapeClose } from '../utils/modalUtils.js';
 
+/**
+ * Creates and displays a modal for placing bids on an auction listing.
+ *
+ * Features:
+ * - Prevents guests from bidding
+ * - Prevents users from bidding on their own listings
+ * - Validates bid amounts
+ * - Ensures bids are higher than the current highest bid
+ * - Prevents bidding on expired listings
+ * - Dispatches a custom "bid:placed" event after success
+ * - Stores local bid history in localStorage
+ * - Supports overlay click and Escape key closing
+ *
+ * @param {Object} listing - Listing data object.
+ * @param {string} listing.id - Listing ID.
+ * @param {string} listing.title - Listing title.
+ * @param {string} listing.endsAt - Listing end date.
+ * @param {Object} listing.seller - Seller information.
+ * @param {string} listing.seller.name - Seller username.
+ * @param {Array<Object>} [listing.bids] - Existing bids.
+ *
+ * @returns {void}
+ */
 export default function bidModal(listing) {
   const user = getAuthState();
   if (!user) {
@@ -74,6 +97,10 @@ export default function bidModal(listing) {
       alert('Please enter a valid bid amount.');
       return;
     }
+    /**
+     * Prevent users from placing bids lower than or equal
+     * to the current highest bid.
+     */
     const highestBid = listing.bids?.length
       ? Math.max(...listing.bids.map((b) => b.amount))
       : 0;
@@ -92,7 +119,11 @@ export default function bidModal(listing) {
       if (!result) return;
 
       showToast('Bid placed successfully!');
-      document.body.removeChild(modal);
+      closeModal(modal);
+      /**
+       * Notify other parts of the application that a new bid
+       * has been placed so UI components can update in real time.
+       */
       document.dispatchEvent(
         new CustomEvent('bid:placed', {
           detail: {
@@ -101,6 +132,10 @@ export default function bidModal(listing) {
           },
         })
       );
+      /**
+       * Store successful bids locally for quick access
+       * and profile-related UI updates.
+       */
       const myBids = JSON.parse(localStorage.getItem('myBids') || '[]');
       myBids.push({
         listingId: listing.id,

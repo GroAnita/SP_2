@@ -1,6 +1,6 @@
 import apiClient from './apiClient.js';
 
-export async function fetchListings({ page = 1, limit = 17, query = '' } = {}) {
+export async function fetchListings({ page = 1, limit = 18, query = '' } = {}) {
   try {
     let endpoint = `/auction/listings?page=${page}&limit=${limit}&sort=created&sortOrder=desc&_bids=true&_seller=true`;
 

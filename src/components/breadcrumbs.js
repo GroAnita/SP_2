@@ -25,9 +25,8 @@
  */
 
 export default function Breadcrumbs(items = []) {
-  const base = import.meta.env.BASE_URL || '';
   const nav = document.createElement('nav');
-  nav.className = 'text-sm text-gray-400 mb-4';
+  nav.className = 'text-sm text-gray-400 mb-4 line-clamp-2';
   nav.setAttribute('aria-label', 'Breadcrumb');
 
   const list = document.createElement('ol');
@@ -39,7 +38,7 @@ export default function Breadcrumbs(items = []) {
 
     if (item.path && index !== items.length - 1) {
       const link = document.createElement('a');
-      link.href = `${base}${item.path}`;
+      link.href = item.path;
       link.textContent = item.label;
       link.className = 'hover:underline text-gray-500';
       link.setAttribute('data-link', '');

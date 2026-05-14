@@ -60,18 +60,14 @@ export default function OwnListingCard(listing) {
     },
 
     onDelete: async () => {
-      const confirmed = confirm(`Delete "${listing.title}"?`);
-
-      if (!confirmed) return;
-
       try {
         await deleteListing(listing.id);
 
         showToast('Listing deleted', 'success');
 
-        const card = dropdown.closest('[data-listing-card]');
-
-        if (card) card.remove();
+        document.dispatchEvent(
+          new CustomEvent('listingDeleted', { detail: listing.id })
+        );
       } catch (error) {
         showToast(error.message, 'error');
       }

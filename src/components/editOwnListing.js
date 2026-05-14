@@ -7,9 +7,36 @@ import {
   createTextareaWithIcon,
 } from '../utils/createInputWithIcon.js';
 import updateListing from '../services/listingFetchService.js';
-import listingDropdownMenu from './listingDropdownMenu.js';
 import optimizeImageUrl from '../utils/optimizeImageUrl.js';
 
+/**
+ * Opens a modal for creating, editing, or relisting an auction listing.
+ *
+ * Features:
+ * - Create new listings
+ * - Edit existing listings
+ * - Relist expired listings
+ * - Add/remove tags
+ * - Add/remove image URLs
+ * - Validate required fields
+ * - Prevent editing price/dates when bids exist
+ *
+ * @param {Object|null} [listing=null] - Existing listing data.
+ * @param {string} listing.id - Listing ID.
+ * @param {string} listing.title - Listing title.
+ * @param {string} listing.description - Listing description.
+ * @param {string[]} listing.tags - Listing tags.
+ * @param {Array<{url: string}>} listing.media - Listing media images.
+ * @param {number} listing.price - Starting price.
+ * @param {string} listing.startsAt - Listing start date.
+ * @param {string} listing.endsAt - Listing end date.
+ * @param {Array} listing.bids - Array of bids.
+ *
+ * @param {Object} [options={}] - Additional modal options.
+ * @param {boolean} [options.relist=false] - Whether the listing is being relisted.
+ *
+ * @returns {void}
+ */
 export default function editOwnListing(listing = null, options = {}) {
   const hasBids = listing?.bids?.length > 0;
   const isRelist = options?.relist;
@@ -180,6 +207,13 @@ export default function editOwnListing(listing = null, options = {}) {
   const imageGrid = document.createElement('div');
   imageGrid.className = 'grid grid-cols-4 gap-2 mt-2 w-full';
 
+  /**
+   * Renders an image preview card with remove functionality.
+   *
+   * @param {string} url - Image URL to render.
+   * @returns {void}
+   */
+
   function renderImage(url) {
     const imageWrapper = document.createElement('div');
 
@@ -238,12 +272,6 @@ export default function editOwnListing(listing = null, options = {}) {
     placeholder: 'Image URL',
   });
 
-  /*const imageUrlInput = document.createElement('input');
-  imageUrlInput.type = 'text';
-  imageUrlInput.placeholder = 'Image URL';
-  imageUrlInput.className =
-    'input w-full border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary';*/
-
   const imageUrlObj = createFormField('Image URL', imageUrlField);
   imageContent.appendChild(imageUrlObj.wrapper);
   const imageUrlInput = imageUrlObj.input;
@@ -301,6 +329,15 @@ export default function editOwnListing(listing = null, options = {}) {
 
   document.body.appendChild(modal);
 
+  /**
+   * Validates that an input field contains a value.
+   *
+   * @param {HTMLInputElement|HTMLTextAreaElement} input - Input element to validate.
+   * @param {HTMLElement} errorEl - Error message element.
+   * @param {string} message - Error message to display.
+   *
+   * @returns {boolean} True if valid, otherwise false.
+   */
   function validateRequired(input, errorEl, message) {
     if (!input.value.trim()) {
       input.classList.add('border-red-500');
@@ -340,6 +377,14 @@ export default function editOwnListing(listing = null, options = {}) {
     }
   });
 
+  /**
+   * Handles listing form submission.
+   *
+   * Creates, updates, or relists a listing depending on modal state.
+   *
+   * @param {SubmitEvent} e - Form submit event.
+   * @returns {Promise<void>}
+   */
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -354,7 +399,7 @@ export default function editOwnListing(listing = null, options = {}) {
       }
     }
 
-    const isValig =
+    const isValid =
       validateRequired(titleInput, titleObj.error, 'Title is required') &&
       (listing ||
         validateRequired(
@@ -363,7 +408,7 @@ export default function editOwnListing(listing = null, options = {}) {
           'End date is required'
         ));
 
-    if (!isValig) {
+    if (!isValid) {
       showToast(
         'Please fix the errors in the form before submitting.',
         'error'

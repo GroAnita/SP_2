@@ -10,26 +10,25 @@ import listingDropdownMenu from './listingDropdownMenu.js';
  *
  * Displays:
  * - Listing title and image
- * - Current highest bid
+ * - Current highest bid and who has it
  * - Auction status (active / ended)
- * - Winning status for the current user
+ * - Winning(losing) status for the current user
  * - Bid outcome (sold / not sold)
  *
  * Features:
  * - Dropdown menu (edit/delete)
  * - Delete functionality with confirmation
- * - Dynamic UI based on auction state
+ * - Dynamic UI based on the auction state
  *
- * Behavior:
- * - If listing data is invalid → returns empty element
+ * Behaviors:
+ * - If listing data is invalid it then returns empty element
  * - Highlights if current user is the highest bidder
  * - Shows different states for active vs ended auctions
  *
  * Dependencies:
- * - deleteListing() → deletes listing via API
- * - getHighestBidder() → calculates highest bidder
+ * - deleteListing() → deletes listing via the API
+ * - getHighestBidder() → calculates who the highest bidder is
  * - getAuthState() → retrieves current user
- * - showToast() → displays success/error messages
  *
  * @function myBidsCard
  *
@@ -57,10 +56,29 @@ export default function MyBidsCard(listing) {
     (bid) => bid.bidder?.name === listing._user?.name
   );
 
+  const whoIsWinning = document.createElement('p');
+  const highestBidder = getHighestBidder(listing.bids);
+  whoIsWinning.className = 'text-sm text-text font-semibold';
+  if (highestBidder?.bidder?.name) {
+    whoIsWinning.textContent = `Current highest bid: ${highestBid} by ${highestBidder.bidder.name}`;
+  } else {
+    whoIsWinning.textContent = `No bids yet. Be the first to bid!`;
+  }
+
   const isWinner = userBid && userBid.amount === highestBid;
 
   const isActive = new Date(listing.endsAt) > new Date();
 
+  /**
+   * Creates a dropdown menu configurations object.
+   *
+   * The dropdown gets different actions depending on owner/not owner status:
+   * - Owners can delete their own listings
+   * - Non-owners only see default menu actions
+   *
+   * Uses conditional object spreading to only! inject the `onDelete`
+   * handler when the current user is the owner of the listing.
+   */
   const dropdown = listingDropdownMenu({
     listing,
     ...(isOwner && {
@@ -82,13 +100,23 @@ export default function MyBidsCard(listing) {
     status.textContent = 'Auction Active';
     status.classList.add('text-green-500');
   } else {
-    status.textContent = isWinner ? 'You Won 🎉' : 'You Lost';
+    status.textContent = isWinner ? 'You Won!' : 'You Lost..!';
 
     status.classList.add(isWinner ? 'text-green-500' : 'text-red-500');
   }
 
   extraContent.appendChild(status);
+  extraContent.appendChild(whoIsWinning);
 
+  /**
+   * so this builds a reusable listing card using the shared base component.
+   *
+   * it passes:
+   * - listing data for the main card content
+   * - a dropdown menu for the card actions
+   * - my extra custom content (status, highest bidder etc.)
+   * - and a dynamic title link for SPA navigation
+   */
   return listingCardBase(listing, {
     headerRight: dropdown,
     extraContent,
