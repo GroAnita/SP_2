@@ -174,6 +174,7 @@ export default function Header() {
 
   imgContainer.appendChild(logo);
   topHeader.appendChild(imgContainer);
+  topHeader.appendChild(searchInputLabel);
   topHeader.appendChild(searchInput);
 
   profileContainer.appendChild(coins);
