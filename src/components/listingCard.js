@@ -68,11 +68,11 @@ export default function ListingCard(listing, isFeatured = false) {
 
   const content = document.createElement('div');
   content.className =
-    'absolute bottom-0 p-3 text-white z-20 flex flex-col gap-1 w-full';
+    'absolute bottom-0 p-3 text-white bg-black/40 z-20 flex flex-col gap-1 w-full';
 
   const title = document.createElement('h2');
   title.textContent = listing.title;
-  title.className = 'text-sm text-primary font-bold font-inter line-clamp-2';
+  title.className = 'text-sm text-primary  font-bold font-inter line-clamp-2';
 
   const bid = document.createElement('p');
   bid.textContent = `Highest Bid: ${getHighestBid(listing.bids)} Coins`;
