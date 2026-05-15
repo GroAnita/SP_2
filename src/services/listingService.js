@@ -1,16 +1,37 @@
 import apiClient from './apiClient.js';
 
-export async function fetchListings({ page = 1, limit = 18, query = '' } = {}) {
+export async function fetchListings({
+  page = 1,
+  limit = 18,
+  query = '',
+  tag = '',
+  active = false,
+  sort = 'created',
+  sortOrder = 'desc',
+} = {}) {
   try {
-    let endpoint = `/auction/listings?page=${page}&limit=${limit}&sort=created&sortOrder=desc&_bids=true&_seller=true`;
+    const params = new URLSearchParams({
+      page,
+      limit,
+      sort,
+      sortOrder,
+      _bids: true,
+      _seller: true,
+    });
 
-    if (query) {
-      endpoint += `&q=${encodeURIComponent(query)}`;
+    if (query.trim()) {
+      params.append('q', query.trim());
+    }
+    if (tag.trim()) {
+      params.append('tag', tag.trim());
+    }
+    if (active) {
+      params.append('active', 'true');
     }
 
-    const result = await apiClient(endpoint);
+    const endpoint = `/auction/listings?${params.toString()}`;
 
-    return result;
+    return await apiClient(endpoint);
   } catch (error) {
     console.error('Error fetching the listings:', error);
     throw error;

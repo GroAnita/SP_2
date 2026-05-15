@@ -7,26 +7,45 @@ import Loader from '../components/loader.js';
  * Creates and renders the Listings page.
  *
  * Features:
- * - Fetches paginated auction listings from the API
- * - Supports client-side sorting (newest, ending soon, active)
- * - Supports search filtering via URL query (?q=...)
+ * - Fetches auction listings from the API
+ * - Supports API-driven:
+ *   - searching
+ *   - sorting
+ *   - filtering
+ *   - pagination
+ * - Syncs filters with URL query parameters
  * - Displays listings in a responsive grid
- * - Handles pagination (next / previous)
- * - Updates listings in real-time when a bid is placed
+ * - Supports browser navigation via History API
+ * - Updates listings reactively when bids are placed
+ *
+ * Supported URL params:
+ * - ?q=searchterm
+ * - ?tag=gaming
+ * - ?active=true
+ * - ?sort=created
+ * - ?sortOrder=desc
  *
  * State handled internally:
  * - Current page number
  * - Loading state
- * - Last page detection
- * - Cached listings for sorting/filtering
+ * - Pagination state
+ * - Cached listing updates
  *
  * Events:
- * - Listens for "bid:placed" to update affected listing
+ * - Listens for "bid:placed"
+ * - Re-fetches updated listing data
+ *
+ * UI Features:
+ * - Loading spinner
+ * - Empty states
+ * - Pagination controls
+ * - Sorting controls
  *
  * @async
  * @function Listings
  *
- * @returns {Promise<HTMLElement>} Fully constructed Listings page element
+ * @returns {Promise<HTMLElement>}
+ * Fully rendered listings page.
  *
  * @example
  * const view = await Listings();
@@ -37,10 +56,7 @@ export default async function Listings() {
   const limit = 18;
   let isLastPage = false;
   let isLoading = false;
-  const params = new URLSearchParams(window.location.search);
-  const query = params.get('q');
   let currentListings = [];
-  const id = params.get('id');
 
   const container = document.createElement('main');
   container.className = 'container w-2/3 mx-auto p-4  ';
@@ -77,14 +93,38 @@ export default async function Listings() {
   filterSelect.id = 'listing-sort';
 
   filterSelect.addEventListener('change', () => {
-    const sorted = sortListings([...currentListings], filterSelect.value);
+    const params = new URLSearchParams(window.location.search);
 
-    listingGrid.innerHTML = '';
+    switch (filterSelect.value) {
+      case 'newest':
+        params.set('sort', 'created');
+        params.set('sortOrder', 'desc');
+        params.delete('active');
+        break;
 
-    sorted.forEach((listing, index) => {
-      const isFeatured = page === 1 && index === 4;
-      listingGrid.appendChild(listingCard(listing, isFeatured));
-    });
+      case 'ending-soon':
+        params.set('sort', 'endsAt');
+        params.set('sortOrder', 'desc');
+        params.delete('active');
+        break;
+
+      case 'active':
+        params.set('active', 'true');
+        params.set('sort', 'created');
+        params.set('sortOrder', 'desc');
+        break;
+
+      default:
+        params.delete('sort');
+        params.delete('sortOrder');
+        params.delete('active');
+    }
+
+    history.pushState({}, '', `?${params.toString()}`);
+
+    page = 1;
+
+    loadListings();
   });
 
   filterContainer.appendChild(filterLabel);
@@ -127,39 +167,6 @@ export default async function Listings() {
   container.appendChild(pagination);
 
   /**
-   * Sorts listings based on selected type.
-   *
-   * @param {Listing[]} listings
-   * @param {'newest' | 'ending-soon' | 'active' | ''} type
-   * @returns {Listing[]}
-   */
-  function sortListings(listings, type) {
-    const now = new Date();
-    if (type === 'newest') {
-      return [...listings].sort(
-        (a, b) => new Date(b.created) - new Date(a.created)
-      );
-    }
-    if (type === 'ending-soon') {
-      return [...listings].sort(
-        (a, b) => new Date(a.endsAt) - new Date(b.endsAt)
-      );
-    }
-    if (type === 'active') {
-      return [...listings].sort((a, b) => {
-        const aActive = new Date(a.endsAt) > now;
-        const bActive = new Date(b.endsAt) > now;
-
-        if (aActive && !bActive) return -1;
-        if (!aActive && bActive) return 1;
-
-        return 0;
-      });
-    }
-    return listings;
-  }
-
-  /**
    * Handles "bid:placed" event and updates the affected listing in the UI.
    *
    * @param {CustomEvent} e - Event containing listingId in e.detail
@@ -168,7 +175,17 @@ export default async function Listings() {
   async function handleBidPlaced(e) {
     const { listingId } = e.detail;
     try {
-      const updated = await fetchListings({ page, limit, query });
+      const currentParams = new URLSearchParams(window.location.search);
+
+      const updated = await fetchListings({
+        page,
+        limit,
+        query: currentParams.get('q')?.trim() || '',
+        tag: currentParams.get('tag')?.trim() || '',
+        sort: currentParams.get('sort') || 'created',
+        sortOrder: currentParams.get('sortOrder') || 'desc',
+        active: currentParams.get('active') === 'true',
+      });
       const updatedListing = updated.data.find((l) => l.id === listingId);
       if (!updatedListing) return;
 
@@ -212,22 +229,20 @@ export default async function Listings() {
     listingGrid.appendChild(Loader('lg'));
 
     try {
-      const result = await fetchListings({ page, limit: query ? 100 : limit });
+      const currentParams = new URLSearchParams(window.location.search);
+
+      const result = await fetchListings({
+        page,
+        limit,
+        query: currentParams.get('q')?.trim() || '',
+        tag: currentParams.get('tag')?.trim() || '',
+        sort: currentParams.get('sort') || 'created',
+        sortOrder: currentParams.get('sortOrder') || 'desc',
+        active: currentParams.get('active') === 'true',
+      });
 
       currentListings = result.data;
       let listings = [...currentListings];
-      if (query) {
-        listings = listings.filter((listing) => {
-          const title = listing.title?.toLowerCase() || '';
-          const description = listing.description?.toLowerCase() || '';
-          return (
-            title.includes(query.toLowerCase()) ||
-            description.includes(query.toLowerCase())
-          );
-        });
-      }
-
-      listings = sortListings(listings, filterSelect.value);
 
       if (!listings.length && page === 1) {
         listingGrid.innerHTML =

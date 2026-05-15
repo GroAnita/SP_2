@@ -21,31 +21,78 @@ export default async function updateListing(id, data) {
 }
 
 /**
- * Fetches paginated active auction listings.
+ * Fetch auction listings with optional
+ * filtering, sorting and pagination.
  *
  * Includes:
  * - Seller information
  * - Bid information
- * - Sorting by newest listings first
+ * - Search support
+ * - Tag filtering
+ * - Active listing filtering
+ * - Sorting support
  *
  * @async
- * @param {Object} [options={}] - Fetch configuration.
- * @param {number} [options.page=1] - Page number.
- * @param {number} [options.limit=18] - Number of listings per page.
+ * @param {Object} [options={}]
+ * @param {number} [options.page=1]
+ * Current pagination page.
+ *
+ * @param {number} [options.limit=18]
+ * Listings per page.
+ *
+ * @param {string} [options.query='']
+ * Search query.
+ *
+ * @param {string} [options.tag='']
+ * Filter listings by tag.
+ *
+ * @param {boolean} [options.active=false]
+ * Whether to fetch only active listings.
+ *
+ * @param {string} [options.sort='created']
+ * Field to sort by.
+ *
+ * @param {'asc' | 'desc'} [options.sortOrder='desc']
+ * Sorting direction.
  *
  * @returns {Promise<Object>}
- * API response containing listing data and metadata.
+ * API response containing listing data.
  *
- * @throws Will throw an error if the request fails.
+ * @throws {Error}
+ * Throws if the request fails.
  */
-export async function fetchListings({ page = 1, limit = 18 } = {}) {
+export async function fetchListings({
+  page = 1,
+  limit = 18,
+  query = '',
+  tag = '',
+  active = false,
+  sort = 'created',
+  sortOrder = 'desc',
+} = {}) {
   try {
-    const onlyActive = true;
-    const result = await apiClient(
-      `/auction/listings?_active=${onlyActive}&_bids=true&_seller=true&page=${page}&limit=${limit}&sort=created&sortOrder=desc`
-    );
+    const params = new URLSearchParams({
+      page,
+      limit,
+      sort,
+      sortOrder,
+      _bids: 'true',
+      _seller: 'true',
+    });
 
-    return result;
+    if (query) {
+      params.set('q', query);
+    }
+    if (tag) {
+      params.set('_tag', tag);
+    }
+    if (active) {
+      params.set('_active', 'true');
+    }
+
+    const endpoint = `/auction/listings?${params.toString()}`;
+
+    return await apiClient(endpoint);
   } catch (error) {
     console.error('Error fetching the listings:', error);
     throw error;
