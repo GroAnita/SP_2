@@ -56,10 +56,16 @@ export default function Header() {
   logo.alt = 'LemonBids Logo';
   logo.className = 'w-14 h-14 mr-2';
 
+  const searchInputLabel = document.createElement('label');
+  searchInputLabel.className = 'sr-only';
+  searchInputLabel.htmlFor = 'header-search';
+  searchInputLabel.textContent = 'Search listings';
+
   const searchInput = document.createElement('input');
   searchInput.type = 'text';
   searchInput.placeholder = 'Search listings...';
   searchInput.className = 'input hidden md:block md:w-[600px] ';
+  searchInput.id = 'header-search';
 
   searchInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
