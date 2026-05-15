@@ -62,7 +62,8 @@ export default function logInModal() {
   form.autocomplete = 'on';
 
   const title = document.createElement('h2');
-  title.className = 'text-2xl font-bold mb-4 text-center font-poppins';
+  title.className =
+    'text-2xl font-bold mb-4 text-center text-gray-900 font-poppins';
   title.textContent = 'Log in to your account!';
 
   const userNameLabel = document.createElement('label');
@@ -95,7 +96,7 @@ export default function logInModal() {
   submitBtn.textContent = 'Log In';
 
   const newUserLink = document.createElement('p');
-  newUserLink.className = 'text-sm mt-4 text-center text-text';
+  newUserLink.className = 'text-sm mt-4 text-center text-gray-900';
 
   const link = document.createElement('a');
   link.href = '/register';
@@ -109,7 +110,7 @@ export default function logInModal() {
 
   newUserLink.append("Don't have an account? ", link, '.');
   const forgotPasswordLink = document.createElement('p');
-  forgotPasswordLink.className = 'text-sm mt-2 text-center text-text';
+  forgotPasswordLink.className = 'text-sm mt-2 text-center text-gray-900';
   forgotPasswordLink.innerHTML =
     '<a href="/forgot-password" class="text-secondary hover:underline" data-link>Forgot your password?</a>.';
 

@@ -3,7 +3,7 @@ export default function renderTags(tags, tagsWrapper, tagsInput) {
   tags.forEach((tag, index) => {
     const chip = document.createElement('span');
     chip.className =
-      'bg-primary text-text px-2 py-1 rounded-xl text-sm flex items-center gap-1';
+      'bg-primary text-gray-900 px-2 py-1 rounded-xl text-sm flex items-center gap-1';
     chip.textContent = tag;
 
     const removeBtn = document.createElement('button');

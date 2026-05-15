@@ -72,11 +72,11 @@ export default function ListingCard(listing, isFeatured = false) {
 
   const title = document.createElement('h2');
   title.textContent = listing.title;
-  title.className = 'text-sm font-bold line-clamp-2';
+  title.className = 'text-sm text-primary font-bold font-inter line-clamp-2';
 
   const bid = document.createElement('p');
   bid.textContent = `Highest Bid: ${getHighestBid(listing.bids)} Coins`;
-  bid.className = 'text-xs';
+  bid.className = 'text-xs font-semibold text-white';
 
   // TIME
   const time = document.createElement('span');

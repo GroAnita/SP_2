@@ -98,7 +98,7 @@ export default function CreateNewListing() {
 
   const tagsLabel = document.createElement('label');
   tagsLabel.textContent = 'Tags';
-  tagsSection.className = 'flex flex-col gap-1';
+  tagsSection.className = 'flex flex-col text-text gap-1';
 
   const tagsWrapper = document.createElement('div');
   tagsWrapper.className =

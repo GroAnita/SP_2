@@ -85,7 +85,7 @@ export default function Header() {
   const tooltip = document.createElement('span');
   tooltip.textContent = 'Theme';
   tooltip.className =
-    'absolute top-[30px] left-1/2 -translate-x-1/2 bg-primary text-text text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity';
+    'absolute top-[30px] left-1/2 -translate-x-1/2 bg-primary text-black text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity';
 
   const toggleButton = document.createElement('i');
   toggleButton.className =

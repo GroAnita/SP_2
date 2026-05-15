@@ -57,7 +57,7 @@ export default function editOwnListing(listing = null, options = {}) {
     'flex flex-col items-start justify-start w-full md:w-1/2 p-6 bg-card rounded-lg flex-1 mt-4';
 
   const modalTitle = document.createElement('h2');
-  modalTitle.className = 'text-2xl font-bold mb-4';
+  modalTitle.className = 'text-2xl text-text font-bold mb-4';
   modalTitle.textContent = isRelist
     ? 'Relist Listing'
     : listing
@@ -201,7 +201,7 @@ export default function editOwnListing(listing = null, options = {}) {
   const addImageButton = document.createElement('button');
   addImageButton.type = 'button';
   addImageButton.className =
-    'bg-primary text-text px-4 py-2 rounded-full border-2 border-text mt-2 hover:bg-secondary transition';
+    'bg-primary text-gray-900 px-4 py-2 rounded-full border-2 border-text mt-2 hover:bg-secondary transition';
   addImageButton.textContent = 'Add Image';
 
   const imageGrid = document.createElement('div');
@@ -293,7 +293,7 @@ export default function editOwnListing(listing = null, options = {}) {
   const createButton = document.createElement('button');
   createButton.type = 'submit';
   createButton.className =
-    'bg-primary text-text px-4 py-2 border-2 border-text rounded-full hover:bg-primary-dark transition mt-4 hover:bg-secondary';
+    'bg-primary text-gray-900 px-4 py-2 border-2 border-text rounded-full hover:bg-primary-dark transition mt-4 hover:bg-secondary';
   createButton.textContent = isRelist
     ? 'Relist'
     : listing

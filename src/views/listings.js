@@ -145,7 +145,7 @@ export default async function Listings() {
 
   const prevButton = document.createElement('button');
   prevButton.className =
-    'px-4 py-2 bg-primary text-text rounded-full disabled:opacity-40 disabled:cursor-not-allowed';
+    'px-4 py-2 bg-primary text-black rounded-full disabled:opacity-40 disabled:cursor-not-allowed';
   prevButton.textContent = 'Previous';
   prevButton.setAttribute('aria-label', 'Go to previous page');
 
@@ -154,7 +154,7 @@ export default async function Listings() {
 
   const nextButton = document.createElement('button');
   nextButton.className =
-    'px-4 py-2 bg-primary text-text rounded-full disabled:opacity-40 disabled:cursor-not-allowed';
+    'px-4 py-2 bg-primary text-black rounded-full disabled:opacity-40 disabled:cursor-not-allowed';
   nextButton.textContent = 'Next';
   nextButton.setAttribute('aria-label', 'Go to next page');
 
