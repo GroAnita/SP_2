@@ -132,17 +132,6 @@ export default function bidModal(listing) {
           },
         })
       );
-      /**
-       * Store successful bids locally for quick access
-       * and profile-related UI updates.
-       */
-      const myBids = JSON.parse(localStorage.getItem('myBids') || '[]');
-      myBids.push({
-        listingId: listing.id,
-        amount: bidAmount,
-        time: new Date().toISOString(),
-      });
-      localStorage.setItem('myBids', JSON.stringify(myBids));
     } catch (error) {
       console.error('BID ERROR:', error);
       showToast('Failed to place bid. Please try again.');
