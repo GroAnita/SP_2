@@ -95,7 +95,7 @@ export default function listingDropdownMenu({
     e.stopPropagation();
   });
 
-  // close outside
+  // close when click outside
   document.addEventListener('click', () => {
     menu.classList.add('hidden');
   });

@@ -1,5 +1,39 @@
 let toastTimeout;
 
+/**
+ * Displays a toast notification.
+ *
+ * Features:
+ * - Creates toast element dynamically if missing
+ * - Supports success, warning, and error styles
+ * - Automatically fades out after a duration
+ * - Prevents overlapping timeout issues
+ *
+ * Toast types:
+ * - success → green
+ * - warning → yellow
+ * - error → red (default)
+ *
+ * @function showToast
+ *
+ * @param {string} message
+ * Message displayed inside the toast.
+ *
+ * @param {'success' | 'warning' | 'error'} [type='error']
+ * Toast style type.
+ *
+ * @param {number} [duration=3000]
+ * Duration in milliseconds before the toast fades out.
+ *
+ * @returns {void}
+ *
+ * @example
+ * showToast('Listing created successfully!', 'success');
+ *
+ * @example
+ * showToast('Something went wrong.', 'error', 5000);
+ */
+
 export default function showToast(message, type = 'error', duration = 3000) {
   let toast = document.getElementById('toast');
 

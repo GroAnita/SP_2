@@ -159,8 +159,8 @@ export default function hamburgerMenu() {
          * Prevents guests from opening the create listing modal.
          *
          * Even though the menu item is hidden for unauthenticated users,
-         * this acts as an additional layer of protection against manual
-         * DOM manipulation or forced navigation attempts.
+         * this will act as an additional layer of protection against manual
+         * DOM manipulation or forced navigation attempts. Security.
          */
         if (!user) {
           showToast('You must be logged in to create a listing.', 'warning');
@@ -251,7 +251,6 @@ export default function hamburgerMenu() {
 
   setupEscapeClose(modal, container);
 
-  // BUILD MODAL
   container.appendChild(closeButton);
   container.appendChild(userSection);
   userInfo.appendChild(userName);

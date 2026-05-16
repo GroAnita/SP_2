@@ -127,7 +127,7 @@ export default function logInModal() {
   /**
    * Handles login form submission and authentication.
    *
-   * Validates required fields before attempting login.
+   * Validates required fields before trying to login.
    * Displays toast feedback for success or failure.
    */
 
@@ -190,7 +190,7 @@ export default function logInModal() {
   setupEscapeClose(modal);
 
   /**
-   * Autofocus username input after modal renders.
+   * Autofocus username input after modal renders.accessibility
    */
   requestAnimationFrame(() => {
     userNameInput.focus();

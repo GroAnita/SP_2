@@ -25,10 +25,10 @@ import listingDropdownMenu from './listingDropdownMenu.js';
  * - Removes card from UI after successful deletion
  *
  * Dependencies:
- * - deleteListing() → deletes listing via API
- * - editOwnListing() → opens edit/relist UI
- * - getHighestBidder() → calculates highest bidder
- * - showToast() → displays success/error messages
+ * - deleteListing()  deletes listing via API
+ * - editOwnListing()  opens edit/relist UI
+ * - getHighestBidder()  calculates highest bidder
+ * - showToast()  displays success/error messages
  *
  * @function OwnListingCard
  *

@@ -1,5 +1,52 @@
+/**
+ * Creates and updates a live countdown timer
+ * for auction listings.
+ *
+ * Features:
+ * - Updates every second
+ * - Displays remaining time dynamically
+ * - Applies visual urgency styling based on time left
+ * - Stops automatically when the auction ends
+ *
+ * Time display format:
+ * - Weeks + days
+ * - Days + hours
+ * - Hours + minutes
+ * - Minutes + seconds
+ *
+ * Styling behavior:
+ * - Green → More than 1 hour remaining
+ * - Yellow → Less than 1 hour remaining
+ * - Red + pulse animation → Less than 1 minute remaining
+ * - Extra scaling → Less than 10 seconds remaining
+ *
+ * @function updateCountdown
+ *
+ * @param {HTMLElement} timeEl
+ * Element where the countdown text is rendered.
+ *
+ * @param {Date} endTime
+ * Auction end date/time.
+ *
+ * @returns {number}
+ * Interval ID returned from `setInterval()`.
+ *
+ * @example
+ * const intervalId = updateCountdown(timeElement, endDate);
+ *
+ * @example
+ * clearInterval(intervalId);
+ */
 export function updateCountdown(timeEl, endTime) {
   let interval;
+  /**
+   * Updates countdown text and styling.
+   *
+   * @inner
+   * @function tick
+   *
+   * @returns {void}
+   */
   function tick() {
     if (!(timeEl instanceof Element) || Number.isNaN(endTime?.getTime?.())) {
       return;
@@ -16,6 +63,7 @@ export function updateCountdown(timeEl, endTime) {
       'shadow-[0_0_10px_2px_rgba(255,0,0,0.7)]'
     );
 
+    //urgency styling
     if (timeDiff <= 60000) {
       timeEl.classList.add(
         'text-red-500',
@@ -31,6 +79,7 @@ export function updateCountdown(timeEl, endTime) {
       timeEl.classList.add('text-green-400');
     }
 
+    // If time is up, show ended state and stop timer
     if (timeDiff <= 0) {
       timeEl.textContent = 'Auction Ended';
       timeEl.classList.remove('card-time');

@@ -208,7 +208,7 @@ export default function editOwnListing(listing = null, options = {}) {
   imageGrid.className = 'grid grid-cols-4 gap-2 mt-2 w-full';
 
   /**
-   * Renders an image preview card with remove functionality.
+   * Renders an image preview card that also allows you to remove it.
    *
    * @param {string} url - Image URL to render.
    * @returns {void}
@@ -298,7 +298,7 @@ export default function editOwnListing(listing = null, options = {}) {
     ? 'Relist'
     : listing
       ? 'Update Listing'
-      : 'Create Listing';
+      : 'Create Listing'; /*wanting to be better at thinking about how to make my code smaller, so testing out more of these terniary operators in this project, this one decides the text content of the createButton based on whether the user is creating a new listing, editing an existing one, or relisting an expired listing.*/
 
   const cancelButton = document.createElement('button');
   cancelButton.type = 'button';

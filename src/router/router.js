@@ -36,7 +36,7 @@ const routes = {
 };
 
 /**
- * Main SPA router responsible for:
+ * Router responsible for:
  * - Resolving the current URL path
  * - Matching it to a route
  * - Handling protected routes (auth guard)
@@ -88,17 +88,17 @@ export default function router() {
     return;
   }
 
-  // Clear immediately
+  // Clear
   app.innerHTML = '';
   headerContainer.innerHTML = '';
 
-  // Render header immediately
+  // Render header
   headerContainer.appendChild(Header());
 
-  // Show loading state immediately
+  // Show loading state
   app.appendChild(Loader());
 
-  // THEN load page
+  // And then load page
   const page = route.view();
 
   /**

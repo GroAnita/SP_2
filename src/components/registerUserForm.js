@@ -17,6 +17,45 @@ import {
   createPasswordInputWithIcon,
 } from '../utils/createInputWithIcon.js';
 
+/**
+ * This creates the LemonBids registration form .
+ *
+ * Features:
+ * - Username, address, phone, email, and password fields
+ * - Live form validation with error states
+ * - Password visibility toggle support
+ * - User registration and automatic login
+ * - Toast notifications for success/error states
+ * - SPA navigation after successful registration
+ * - Responsive two-column layout with info section
+ *
+ * Validation includes:
+ * - Username validation
+ * - Noroff student email validation
+ * - Password strength validation
+ * - Phone and address validation
+ * - Password confirmation matching
+ *
+ * Dependencies:
+ * - validationFields()
+ * - validateRegisterForm()
+ * - updateFieldState()
+ * - registerUser()
+ * - loginUser()
+ * - showToast()
+ * - navigate()
+ * - createInputField()
+ * - createPasswordInputWithIcon()
+ *
+ * @function RegisterUserForm
+ *
+ * @returns {HTMLElement}
+ * Fully constructed registration page container.
+ *
+ * @example
+ * const registerView = RegisterUserForm();
+ * app.appendChild(registerView);
+ */
 export default function RegisterUserForm() {
   const container = document.createElement('main');
   container.className =
@@ -160,6 +199,18 @@ export default function RegisterUserForm() {
   infoContainer.appendChild(infoList);
   infoContainer.appendChild(infoImg);
 
+  /**
+   * Handles form submission.
+   *
+   * Flow:
+   * 1. Prevents default form submit
+   * 2. Collects and trims the form values
+   * 3. Validates registration data
+   * 4. Registers user through the API
+   * 5. Automatically logs user in when registration is successful
+   * 6. Updates auth state and redirects
+   * 7. Handles duplicate account fallback login
+   */
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 

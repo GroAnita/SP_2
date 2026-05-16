@@ -1,5 +1,4 @@
 import { deleteListing } from '../services/listingFetchService.js';
-import showToast from '../ui/showToast.js';
 import getHighestBidder from '../utils/getHighestBidder.js';
 import { getAuthState } from '../state/authState.js';
 import listingCardBase from './listingCardBase.js';
@@ -26,9 +25,9 @@ import listingDropdownMenu from './listingDropdownMenu.js';
  * - Shows different states for active vs ended auctions
  *
  * Dependencies:
- * - deleteListing() → deletes listing via the API
- * - getHighestBidder() → calculates who the highest bidder is
- * - getAuthState() → retrieves current user
+ * - deleteListing()  deletes listing via the API
+ * - getHighestBidder()  calculates who the highest bidder is
+ * - getAuthState()  retrieves current user
  *
  * @function myBidsCard
  *

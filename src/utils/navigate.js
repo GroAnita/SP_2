@@ -1,3 +1,31 @@
+/**
+ * Navigates to a new route in the SPA
+ * using the History API.
+ *
+ * Features:
+ * - Supports Vite/GitHub Pages base paths
+ * - Prevents duplicate slashes in URLs
+ * - Updates browser history without page reload
+ * - Triggers the router manually using `popstate`
+ *
+ * Common use cases:
+ * - SPA link navigation
+ * - Redirects after login/register
+ * - Programmatic route changes
+ *
+ * @function navigate
+ *
+ * @param {string} path
+ * Route path to navigate to.
+ *
+ * @returns {void}
+ *
+ * @example
+ * navigate('/profile');
+ *
+ * @example
+ * navigate('/listing?id=123');
+ */
 export default function navigate(path) {
   const base = import.meta.env.BASE_URL || '';
 

@@ -2,9 +2,9 @@
  * Creates a reusable loading spinner component.
  *
  * Supports multiple sizes for different UI contexts:
- * - sm → small inline loaders
- * - md → default page loaders
- * - lg → large section loaders
+ * - sm : small inline loaders
+ * - md : default page loaders
+ * - lg : large section loaders
  *
  * Includes screen reader text for accessibility.
  *

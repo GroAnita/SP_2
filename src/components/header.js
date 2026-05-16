@@ -1,6 +1,5 @@
 import logInModal from './logInModal.js';
 import { getAuthState } from '../state/authState.js';
-import { logoutUser } from '../services/authService.js';
 import { fetchMyProfile } from '../services/profileService.js';
 import hamburgerMenu from './hamburgerMenu.js';
 
@@ -15,11 +14,11 @@ import hamburgerMenu from './hamburgerMenu.js';
  * - Hamburger menu (mobile)
  *
  * Behavior:
- * - If user is logged in → shows profile + credits
- * - If not logged in → shows guest state and login modal on interaction
+ * - If user is logged in  shows profile + credits
+ * - If not logged in  shows guest state and login modal on interaction
  * - Listens for:
- *   - "credits:updated" → refresh user credits
- *   - search input "Enter" → navigates to listings with query
+ *   - "credits:updated"  refresh user credits
+ *   - search input "Enter"  navigates to listings with query
  *
  * Side effects:
  * - Reads auth state from localStorage
@@ -89,7 +88,7 @@ export default function Header() {
   toggleWrapper.className = 'relative group flex items-center';
 
   const tooltip = document.createElement('span');
-  tooltip.textContent = 'Theme';
+  tooltip.textContent = 'Mode';
   tooltip.className =
     'absolute top-[30px] left-1/2 -translate-x-1/2 bg-primary text-black text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity';
 
@@ -107,7 +106,7 @@ export default function Header() {
 
     localStorage.setItem('mode', isDarkMode ? 'dark' : 'light');
 
-    // Animate spin
+    // Animate spin on toggle
     toggleButton.classList.add('rotate-180');
 
     setTimeout(() => {
@@ -192,53 +191,4 @@ export default function Header() {
   });
 
   return header;
-}
-
-/**
- * Creates a navigation link element for the header.
- *
- * Supports:
- * - Normal SPA navigation via data-link
- * - Login → opens login modal instead of navigation
- * - Logout → clears auth state and updates UI
- *
- * @function createNavLink
- *
- * @param {string} text - Link label displayed to the user
- * @param {string} path - Route path (e.g. "/profile", "/login")
- *
- * @returns {HTMLAnchorElement} Configured anchor element
- *
- * @example
- * const link = createNavLink('Profile', '/profile');
- * nav.appendChild(link);
- */
-function createNavLink(text, path) {
-  const link = document.createElement('a');
-  link.href = path;
-  link.textContent = text;
-
-  if (path === '/login') {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      logInModal();
-    });
-  } else if (path === '/logout') {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      logoutUser();
-      document.dispatchEvent(new Event('auth:changed'));
-    });
-  } else {
-    link.dataset.link = '';
-  }
-
-  const currentPath = window.location.pathname;
-  link.className =
-    'px-3 py-2 mx-1 rounded-md text-sm font-medium ' +
-    (currentPath === path
-      ? 'bg-primary text-text'
-      : 'text-text hover:bg-primary hover:text-text');
-
-  return link;
 }

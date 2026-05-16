@@ -1,6 +1,49 @@
 import { updateCountdown } from '../utils/countDown.js';
 import { imageFallback } from '../utils/imageFallback.js';
 
+/**
+ * Creates a clickable auction listing card.
+ *
+ * Features:
+ * - Displays listing image with fallback support
+ * - Shows highest bid amount
+ * - Displays countdown timer until auction ends
+ * - Supports featured card layout
+ * - Uses SPA navigation via data-link
+ * - Adds hover animations and overlays
+ *
+ * Card types:
+ * - Standard listing card
+ * - Featured listing card (larger highlighted layout)
+ *
+ * Dependencies:
+ * - updateCountdown()
+ * - imageFallback()
+ *
+ * @function ListingCard
+ *
+ * @param {Object} listing - Listing data object.
+ * @param {string} listing.id - Listing ID.
+ * @param {string} listing.title - Listing title.
+ * @param {string} [listing.endsAt] - Auction end date.
+ * @param {Array<Object>} [listing.media] - Listing media array.
+ * @param {Array<Object>} [listing.bids] - Listing bids array.
+ *
+ * @param {boolean} [isFeatured=false]
+ * Determines whether the card should render
+ * in featured layout mode.
+ *
+ * @returns {HTMLAnchorElement}
+ * Fully constructed clickable listing card element.
+ *
+ * @example
+ * const card = ListingCard(listing);
+ * listingGrid.appendChild(card);
+ *
+ * @example
+ * const featuredCard = ListingCard(listing, true);
+ * heroSection.appendChild(featuredCard);
+ */
 export default function ListingCard(listing, isFeatured = false) {
   const bids = listing.bids || [];
   const media = listing.media || [];
@@ -106,6 +149,22 @@ export default function ListingCard(listing, isFeatured = false) {
   return card;
 }
 
+/**
+ * Finds the highest bid amount from a bids array.
+ *
+ * @function getHighestBid
+ *
+ * @param {Array<Object>} [bids=[]] - Array of bid objects.
+ * @param {number} bids[].amount - Bid value.
+ *
+ * @returns {number}
+ * Highest bid amount.
+ * Returns 0 if no bids exist.
+ *
+ * @example
+ * getHighestBid([{ amount: 50 }, { amount: 100 }]);
+ * // Returns: 100
+ */
 function getHighestBid(bids = []) {
   if (!bids.length) return 0;
   return Math.max(...bids.map((bid) => bid.amount));
