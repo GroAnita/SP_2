@@ -1,3 +1,5 @@
+<img width="1711" height="576" alt="Screenshot 2026-05-16 at 10 02 17" src="https://github.com/user-attachments/assets/a71f12f3-b61f-4da8-8b5f-f9d290021612" />
+
 # LemonBids
 
 LemonBids is a Single Page Application (SPA) for auctions, built as a Noroff Front-End Development semester project.
