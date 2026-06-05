@@ -7,7 +7,10 @@ import myBidsCard from '../components/myBidsCard.js';
 import { updateProfile } from '../services/profileUpdateService.js';
 import showToast from '../ui/showToast.js';
 import Breadcrumbs from '../components/breadcrumbs.js';
-
+import setupBioEditor from '../utils/profileBioEditor.js';
+import setupAvatarEditor from '../utils/profileAvatarEditor.js';
+import deletesListingsHandler from '../utils/deletesListingsHandler.js';
+import { renderListings } from '../utils/profileListingRenderer.js';
 /**
  * Renders the Profile page view.
  *
@@ -108,63 +111,6 @@ export default async function Profile() {
   editAvatarBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
   editAvatarBtn.setAttribute('aria-label', 'Edit Profile Avatar');
 
-  editAvatarBtn.addEventListener('click', () => {
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.value = user?.avatar?.url || '';
-    input.placeholder = 'Enter avatar image URL';
-    input.className = 'input w-full mt-2';
-
-    const saveBtn = document.createElement('button');
-    saveBtn.textContent = 'Save';
-    saveBtn.className = 'btn-primary mt-2';
-
-    const cancelBtn = document.createElement('button');
-    cancelBtn.textContent = 'Cancel';
-    cancelBtn.className = 'btn-secondary mt-2 ml-2';
-
-    avatarWrapper.innerHTML = '';
-
-    avatarWrapper.appendChild(profileImage);
-    avatarWrapper.appendChild(input);
-    avatarWrapper.appendChild(saveBtn);
-    avatarWrapper.appendChild(cancelBtn);
-
-    saveBtn.addEventListener('click', async () => {
-      try {
-        const result = await updateProfile({
-          avatar: {
-            url: input.value,
-          },
-        });
-
-        localStorage.setItem(
-          'authUser',
-          JSON.stringify({
-            ...user,
-            avatar: result.data.avatar,
-          })
-        );
-
-        profileImage.src = result.data.avatar.url;
-
-        avatarWrapper.innerHTML = '';
-        avatarWrapper.appendChild(profileImage);
-        avatarWrapper.appendChild(editAvatarBtn);
-
-        showToast('Avatar updated successfully!', 'success');
-      } catch (error) {
-        showToast('Error updating avatar.', 'error');
-      }
-    });
-
-    cancelBtn.addEventListener('click', () => {
-      avatarWrapper.innerHTML = '';
-      avatarWrapper.appendChild(profileImage);
-      avatarWrapper.appendChild(editAvatarBtn);
-    });
-  });
-
   const profileInfo = document.createElement('section');
   profileInfo.className =
     'bg-[#f5f5f5] border-2 border-text text-text dark:text-card rounded-lg p-4 max-w-md w-full';
@@ -188,51 +134,6 @@ export default async function Profile() {
   editBioBtn.className =
     'absolute top-0 right-0 bg-primary text-text dark:text-card p-2 rounded-full opacity-80 hover:opacity-100 transition-opacity';
   editBioBtn.setAttribute('aria-label', 'Edit Profile Bio');
-
-  editBioBtn.addEventListener('click', () => {
-    const textarea = document.createElement('textarea');
-    textarea.value = bioText.textContent;
-    textarea.className = 'input w-full';
-    textarea.setAttribute('aria-label', 'Edit your bio');
-
-    const saveBtn = document.createElement('button');
-    saveBtn.textContent = 'Save';
-    saveBtn.className = 'btn-primary mt-2';
-
-    const cancelBtn = document.createElement('button');
-    cancelBtn.textContent = 'Cancel';
-    cancelBtn.className = 'btn-secondary mt-2 ml-2';
-
-    profileBio.innerHTML = '';
-    profileBio.appendChild(textarea);
-    profileBio.appendChild(saveBtn);
-    profileBio.appendChild(cancelBtn);
-
-    saveBtn.addEventListener('click', async () => {
-      try {
-        const result = await updateProfile({
-          bio: textarea.value,
-        });
-        bioText.textContent = result.data.bio;
-        localStorage.setItem(
-          'authUser',
-          JSON.stringify({ ...user, bio: result.data.bio })
-        );
-        profileBio.innerHTML = '';
-        profileBio.appendChild(bioText);
-        profileBio.appendChild(editBioBtn);
-        showToast('Bio updated successfully!', 'success');
-      } catch (error) {
-        showToast('Error updating bio. Please try again later.', 'error');
-      }
-    });
-
-    cancelBtn.addEventListener('click', () => {
-      profileBio.innerHTML = '';
-      profileBio.appendChild(bioText);
-      profileBio.appendChild(editBioBtn);
-    });
-  });
 
   const hr = document.createElement('hr');
   hr.className = 'my-4 border-text';
@@ -282,7 +183,11 @@ export default async function Profile() {
       cachedBids = await fetchMyBidsListings();
     }
 
-    renderListings(cachedBids, myBidsCard);
+    renderListings({
+      listings: cachedBids,
+      cardComponent: myBidsCard,
+      container: ownListingSection,
+    });
   });
 
   ownListingButton.addEventListener('click', async () => {
@@ -292,52 +197,12 @@ export default async function Profile() {
     if (!cachedListings) {
       cachedListings = await fetchOwnListings();
     }
-    renderListings(cachedListings, OwnListingCard);
-  });
-
-  /**
-   * Renders a list of listings into the profile section.
-   *
-   * Applies fade-out/fade-in animation during updates.
-   *
-   * @param {Array<Object>} listings - Array of listing objects
-   * @param {Function} cardComponent - Function that returns a DOM card element
-   *
-   * @returns {void}
-   */
-  function renderListings(listings, cardComponent) {
-    // fade out
-    ownListingSection.classList.add('opacity-0');
-
-    setTimeout(() => {
-      ownListingSection.innerHTML = '';
-
-      if (listings.length === 0) {
-        ownListingSection.textContent =
-          '<p role="status">No listings found.</p>';
-      } else {
-        listings.forEach((listing) => {
-          if (!listing || !listing.title) {
-            console.warn('Skipping invalid listing:', listing);
-            return;
-          }
-          ownListingSection.appendChild(cardComponent(listing));
-        });
-      }
-
-      // fade in
-      ownListingSection.classList.remove('opacity-0');
-    }, 150);
-
-    document.addEventListener('listingDeleted', (e) => {
-      const deletedId = e.detail;
-      const card = document.querySelector(`[data-listing-id="${deletedId}"]`);
-      if (card) {
-        card.remove();
-        showToast('Listing removed from your profile.', 'success');
-      }
+    renderListings({
+      listings: cachedListings,
+      cardComponent: OwnListingCard,
+      container: ownListingSection,
     });
-  }
+  });
 
   const ownListingSection = document.createElement('section');
   ownListingSection.className =
@@ -346,8 +211,20 @@ export default async function Profile() {
   container.appendChild(profileInfoContainer);
   avatarWrapper.appendChild(profileImage);
   avatarWrapper.appendChild(editAvatarBtn);
+  setupAvatarEditor({
+    avatarWrapper,
+    profileImage,
+    editAvatarBtn,
+    user,
+  });
   profileBio.appendChild(bioText);
   profileBio.appendChild(editBioBtn);
+  setupBioEditor({
+    profileBio,
+    bioText,
+    editBioBtn,
+    user,
+  });
   profileInfoContainer.appendChild(avatarWrapper);
   profileInfoContainer.appendChild(profileInfo);
   profileInfoContainer.appendChild(profileBio);
@@ -364,17 +241,27 @@ export default async function Profile() {
       setActiveButton(myBidsButton, ownListingButton);
 
       const listings = await fetchMyBidsListings();
-      renderListings(listings, myBidsCard);
+      renderListings({
+        listings,
+        cardComponent: myBidsCard,
+        container: ownListingSection,
+      });
     } else {
       // default = listings
       setActiveButton(ownListingButton, myBidsButton);
 
       const listings = await fetchOwnListings();
-      renderListings(listings, OwnListingCard);
+      renderListings({
+        listings,
+        cardComponent: OwnListingCard,
+        container: ownListingSection,
+      });
     }
   } catch (error) {
-    ownListingSection.textContent =
-      '<p role="alert">Error loading data. Please try again later.</p>';
+    const message = document.createElement('p');
+    message.role = 'status';
+    message.textContent = 'Error loading listings. Please try again later.';
+    ownListingSection.replaceChildren(message);
   }
 
   /**
@@ -402,12 +289,18 @@ export default async function Profile() {
   async function refreshMyBids() {
     try {
       cachedBids = await fetchMyBidsListings();
-      renderListings(cachedBids, myBidsCard);
+      renderListings({
+        listings: cachedBids,
+        cardComponent: myBidsCard,
+        container: ownListingSection,
+      });
     } catch (error) {
       showToast('Error refreshing bids. Please try again later.', 'error');
     }
   }
   document.addEventListener('bid:placed', handleBidPlaced);
+
+  document.addEventListener('listingDeleted', deletesListingsHandler);
 
   return container;
 }
